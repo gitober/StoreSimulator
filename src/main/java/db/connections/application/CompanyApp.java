@@ -9,17 +9,17 @@ public class CompanyApp {
 
     public static void main(String[] args) {
 
-        CustomerDao empdao = new CustomerDao();
+        CustomerDao customerdao = new CustomerDao();
 
-        List <Customer> employees = empdao.getAllCustomers();
-        for (Customer emp : employees) {
-            System.out.println(emp.getFirstName() + " " + emp.getLastName());
+        List <Customer> customers = customerdao.getAllCustomers();
+        for (Customer customer : customers) {
+            System.out.println(customer.getFirstName() + " " + customer.getLastName());
         }
 
-        Customer emp = empdao.getCustomer(2);
-        System.out.println(emp.getFirstName() + " " + emp.getLastName());
+        Customer customer = customerdao.getCustomer(2);
+        System.out.println(customer.getFirstName() + " " + customer.getLastName());
 
-        empdao.persist(new Customer("Viivi", "Puro", "viivip@mymail.fi", 8300.00));
+        customerdao.persist(new Customer("Viivi", "Puro", "viivip@mymail.fi", 8300.00));
 
         MariaDbConnection.terminate();
     }
