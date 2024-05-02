@@ -3,13 +3,13 @@ package db.connections.entity;
 public class Customer {
 
     private String firstName, lastName, email;
-    private double salary;
+    private int vipCustomerNumber;
 
-    public Customer(String firstName, String lastName, String email, double salary) {
+    public Customer(String firstName, String lastName, String email, int vipCustomerNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.salary = salary;
+        this.vipCustomerNumber = vipCustomerNumber;
     }
 
     public String getFirstName() {
@@ -36,11 +36,11 @@ public class Customer {
         this.email = email;
     }
 
-    public double getSalary() {
-        return salary;
+    public int getVipCustomerNumber() {
+        return vipCustomerNumber;
     }
 
-    public void setSalary(double salary) {
-        this.salary = salary;
+    public void setVipCustomerNumber(int vipCustomerNumber) {
+        this.vipCustomerNumber = vipCustomerNumber;
     }
 }
