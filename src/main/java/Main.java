@@ -5,4 +5,3 @@ public class Main { // Simulator using Java FX
 		SimulatorGUI.main(args);
 	}
 }
-//Testiommentti, voi poistaa
