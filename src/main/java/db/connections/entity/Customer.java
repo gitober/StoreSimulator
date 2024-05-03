@@ -1,15 +1,13 @@
 package db.connections.entity;
-
 public class Customer {
 
-    private String firstName, lastName, email;
-    private int vipCustomerNumber;
+    private String firstName, lastName, email, loyal_card_number;
 
-    public Customer(String firstName, String lastName, String email, int vipCustomerNumber) {
+    public Customer(String firstName, String lastName, String email, String loyal_card_number) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.vipCustomerNumber = vipCustomerNumber;
+        this.loyal_card_number = loyal_card_number;
     }
 
     public String getFirstName() {
@@ -36,11 +34,11 @@ public class Customer {
         this.email = email;
     }
 
-    public int getVipCustomerNumber() {
-        return vipCustomerNumber;
+    public String getloyal_card_number() {
+        return loyal_card_number;
     }
 
-    public void setVipCustomerNumber(int vipCustomerNumber) {
-        this.vipCustomerNumber = vipCustomerNumber;
+    public void setloyal_card_number(String loyal_card_number) {
+        this.loyal_card_number = loyal_card_number;
     }
 }

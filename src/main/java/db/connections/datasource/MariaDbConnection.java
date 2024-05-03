@@ -8,28 +8,35 @@ public class MariaDbConnection {
 
     private static Connection conn = null;
 
+    static {
+        try {
+            Class.forName("org.mariadb.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            System.out.println("MariaDB JDBC driver not found.");
+            e.printStackTrace();
+        }
+    }
+
     public static Connection getConnection() {
-        if (conn==null) {
+        if (conn == null) {
             // connect if necessary
             try {
                 conn = DriverManager.getConnection(
-                        "jdbc:mariadb://localhost:3306/company?user=appuser&password=password");
+                        "jdbc:mariadb://localhost:3306/market?user=appuser9&password=password");
             } catch (SQLException e) {
                 System.out.println("Connection failed.");
                 e.printStackTrace();
             }
-            return conn;
         }
-        else {
-            return conn;
-        }
+        return conn;
     }
 
     public static void terminate() {
         try {
-            getConnection().close();
+            if (conn != null) {
+                conn.close();
+            }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
