@@ -7,43 +7,72 @@ import simu.framework.EventList;
 
 import java.util.LinkedList;
 
-// TODO:
-// Service Point functionalities & calculations (+ variables needed) and reporting to be implemented
+/**
+ * ServicePoint class represents a service point in the store simulator.
+ * It manages the queue of customers and schedules service completion events.
+ */
 public class ServicePoint {
-	private LinkedList<Customer> jono = new LinkedList<Customer>(); // Data Structure used
-	private ContinuousGenerator generator;
-	private EventList eventList;
-	private EventType eventTypeScheduled;
-	//Queuestrategy strategy; // option: ordering of the customer
-	private boolean reserved = false;
+	private LinkedList<Customer> queue = new LinkedList<>(); // LinkedList used for the queue
+	private ContinuousGenerator serviceTimeGenerator; // Generates service times based on a distribution
+	private EventList eventList; // Event list for scheduling events
+	private EventType eventTypeScheduled; // Type of event to schedule on service completion
+	// QueueStrategy strategy; // Could be added to manage different queueing strategies
+	private boolean reserved = false; // Flag to check if the service point is currently reserved
 
-	public ServicePoint(ContinuousGenerator generator, EventList tapahtumalista, EventType tyyppi){
-		this.eventList = tapahtumalista;
-		this.generator = generator;
-		this.eventTypeScheduled = tyyppi;
-				
+	/**
+	 * Constructs a ServicePoint with specified parameters.
+	 * @param generator the continuous generator for service time distribution
+	 * @param eventList the event list where completed service events are added
+	 * @param eventType the type of event to schedule on service completion
+	 */
+	public ServicePoint(ContinuousGenerator generator, EventList eventList, EventType eventType) {
+		this.serviceTimeGenerator = generator;
+		this.eventList = eventList;
+		this.eventTypeScheduled = eventType;
 	}
 
-	public void addQueue(Customer a){   // First customer at the queue is always on the service
-		jono.add(a);
+	/**
+	 * Adds a customer to the queue.
+	 * @param customer the customer to add
+	 */
+	public void addQueue(Customer customer) {
+		queue.add(customer);
 	}
 
-	public Customer removeQueue(){		// Remove serviced customer
+	/**
+	 * Removes a customer from the queue, indicating they have been serviced.
+	 * @return the customer who was serviced
+	 */
+	public Customer removeQueue() {
 		reserved = false;
-		return jono.poll();
+		return queue.poll();
 	}
 
-	public void beginService() {  		// Begins a new service, customer is on the queue during the service
-		reserved = true;
-		double serviceTime = generator.sample();
-		eventList.add(new Event(eventTypeScheduled, Clock.getInstance().getTime()+serviceTime));
+	/**
+	 * Begins service for the next customer in the queue, if any.
+	 */
+	public void beginService() {
+		if (!queue.isEmpty() && !reserved) {
+			reserved = true;
+			double serviceTime = serviceTimeGenerator.sample();
+			// Schedule the completion of the service
+			eventList.add(new Event(eventTypeScheduled, Clock.getInstance().getTime() + serviceTime));
+		}
 	}
 
-	public boolean isReserved(){
+	/**
+	 * Checks if the service point is reserved.
+	 * @return true if reserved, otherwise false
+	 */
+	public boolean isReserved() {
 		return reserved;
 	}
 
-	public boolean isOnQueue(){
-		return jono.size() != 0;
+	/**
+	 * Checks if there are any customers in the queue.
+	 * @return true if the queue is not empty, otherwise false
+	 */
+	public boolean isOnQueue() {
+		return !queue.isEmpty();
 	}
 }

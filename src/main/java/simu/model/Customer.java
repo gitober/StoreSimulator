@@ -3,21 +3,20 @@ package simu.model;
 import simu.framework.Clock;
 import simu.framework.Trace;
 
-
-// TODO:
-// Customer to be implemented according to the requirements of the simulation model (data!)
 public class Customer {
-	private double arrivalTime;
+	private final double arrivalTime; // Make arrivalTime final if it should not change after construction
 	private double removalTime;
-	private int id;
-	private static int i = 1;
-	private static long sum = 0;
-	
+	private final int id; // Make ID final since it should not change
+	private static int nextId = 1; // Rename to nextId to clarify purpose
+	private static long sumDurations = 0; // Rename for clarity
+	private static final Object lock = new Object(); // Lock for thread-safe increments
+
 	public Customer() {
-	    id = i++;
-	    
+		synchronized(lock) { // Synchronize to ensure thread safety
+			id = nextId++;
+		}
 		arrivalTime = Clock.getInstance().getTime();
-		Trace.out(Trace.Level.INFO, "New customer #" + id + " arrived at  " + arrivalTime);
+		Trace.out(Trace.Level.INFO, "New customer #" + id + " arrived at " + arrivalTime);
 	}
 
 	public double getRemovalTime() {
@@ -32,19 +31,20 @@ public class Customer {
 		return arrivalTime;
 	}
 
-	public void setArrivalTime(double arrivalTime) {
-		this.arrivalTime = arrivalTime;
+	public int getId() {
+		return id;
 	}
-	
+
 	public void reportResults() {
 		Trace.out(Trace.Level.INFO, "\nCustomer " + id + " ready! ");
-		Trace.out(Trace.Level.INFO, "Customer "   + id + " arrived: " + arrivalTime);
-		Trace.out(Trace.Level.INFO,"Customer "    + id + " removed: " + removalTime);
-		Trace.out(Trace.Level.INFO,"Customer "    + id + " stayed: "  + (removalTime - arrivalTime));
+		Trace.out(Trace.Level.INFO, "Customer " + id + " arrived: " + arrivalTime);
+		Trace.out(Trace.Level.INFO, "Customer " + id + " removed: " + removalTime);
+		Trace.out(Trace.Level.INFO, "Customer " + id + " stayed: " + (removalTime - arrivalTime));
 
-		sum += (removalTime - arrivalTime);
-		double mean = sum/id;
-		System.out.println("Current mean of the customer service times " + mean);
+		synchronized(lock) {
+			sumDurations += (removalTime - arrivalTime);
+		}
+		double mean = sumDurations / id;
+		Trace.out(Trace.Level.INFO, "Current mean of the customer service times: " + mean);
 	}
-
 }

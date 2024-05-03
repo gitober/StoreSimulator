@@ -1,7 +1,17 @@
 package controller;
 
-/* interface for the engine */
+/**
+ * Interface defining methods that the simulation engine uses to communicate results and updates back to the UI.
+ */
 public interface IControllerMtoV {
-	public void showEndTime(double time);
-	public void visualiseCustomer();
+	/**
+	 * Notifies the UI about the simulation end time.
+	 * @param time the end time of the simulation
+	 */
+	void showEndTime(double time);
+
+	/**
+	 * Notifies the UI to visualize a new customer event.
+	 */
+	void visualiseCustomer();
 }
