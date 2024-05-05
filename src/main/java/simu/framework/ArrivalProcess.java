@@ -1,21 +1,26 @@
 package simu.framework;
-import eduni.distributions.*;
+
+import eduni.distributions.ContinuousGenerator;
 import simu.model.EventType;
 
 public class ArrivalProcess {
 	private ContinuousGenerator generator;
 	private EventList eventList;
-	private EventType type;
+	private EventType eventType;
+	private int customerCount = 0;
+	private final int maxCustomers;
 
-	public ArrivalProcess(ContinuousGenerator g, EventList tl, EventType type) {
-		this.generator = g;
-		this.eventList = tl;
-		this.type = type;
+	public ArrivalProcess(ContinuousGenerator generator, EventList eventList, EventType eventType, int maxCustomers) {
+		this.generator = generator;
+		this.eventList = eventList;
+		this.eventType = eventType;
+		this.maxCustomers = maxCustomers;
 	}
 
 	public void generateNext() {
-		Event t = new Event(type, Clock.getInstance().getTime() + generator.sample());
-		eventList.add(t);
+		if (customerCount < maxCustomers) {
+			eventList.add(new Event(eventType, generator.sample()));
+			customerCount++;
+		}
 	}
-
 }

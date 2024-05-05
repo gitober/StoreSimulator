@@ -2,28 +2,27 @@ package simu.framework;
 
 import controller.IControllerMtoV;
 import simu.model.ServicePoint;
-import java.util.PriorityQueue;
-import java.util.Comparator;
+
+import java.text.DecimalFormat;
 
 public abstract class Engine extends Thread implements IEngine {
-	private double simulationTime = 0;    // time when the simulation will be stopped
+	private double simulationTime = 0;
 	private long delay = 0;
-	private Clock clock;                  // Simplifies code for clock access
+	private Clock clock;
+
 	protected EventList eventList;
-	private PriorityQueue<Event> priorityEventList;  // Priority queue for events based on their priority
 	protected ServicePoint[] servicePoints;
 	protected IControllerMtoV controller;
 
 	public Engine(IControllerMtoV controller) {
 		this.controller = controller;
-		this.clock = Clock.getInstance();
-		this.eventList = new EventList();
-		this.priorityEventList = new PriorityQueue<>(Comparator.comparing(Event::getTime));
+		clock = Clock.getInstance();
+		eventList = new EventList();
 	}
 
 	@Override
 	public void setSimulationTime(double time) {
-		this.simulationTime = time;
+		simulationTime = time;
 	}
 
 	@Override
@@ -33,57 +32,65 @@ public abstract class Engine extends Thread implements IEngine {
 
 	@Override
 	public long getDelay() {
-		return this.delay;
+		return delay;
 	}
 
 	@Override
 	public void run() {
-		initialization(); // Creating the first event, etc.
+		initialization();
 
-		while (simulate()){
+		while (simulate()) {
 			delay();
 			clock.setTime(currentTime());
-			runPriorityEvents();
+			runBEvents();
 			tryCEvents();
 		}
 
 		results();
 	}
 
-	private void runPriorityEvents() {
-		while (!priorityEventList.isEmpty() && priorityEventList.peek().getTime() <= clock.getTime()) {
-			runEvent(priorityEventList.poll());
+	private void runBEvents() {
+		while (!eventList.isEmpty() && eventList.getNextTime() == clock.getTime()) {
+			runEvent(eventList.remove());
 		}
 	}
 
 	private void tryCEvents() {
-		for (ServicePoint p: servicePoints){
-			if (!p.isReserved() && p.isOnQueue()){
+		if (servicePoints == null) {
+			return;
+		}
+
+		for (ServicePoint p : servicePoints) {
+			if (!p.isReserved() && p.isOnQueue()) {
 				p.beginService();
 			}
 		}
 	}
 
 	private double currentTime() {
-		return priorityEventList.isEmpty() ? Double.MAX_VALUE : priorityEventList.peek().getTime();
+		return eventList.getNextTime();
 	}
 
 	private boolean simulate() {
-		Trace.out(Trace.Level.INFO, "Time is: " + clock.getTime());
-		return clock.getTime() < simulationTime;
+		DecimalFormat df = new DecimalFormat("#0.00");
+		double currentTime = clock.getTime();
+		// Trace.out(Trace.Level.INFO, "Current Time: " + df.format(currentTime) + " seconds");
+		return currentTime < simulationTime && eventList.getNextTime() < Double.POSITIVE_INFINITY;
 	}
 
 	private void delay() {
-		Trace.out(Trace.Level.INFO, "Delay " + delay);
+		DecimalFormat df = new DecimalFormat("#0.00");
+		// Trace.out(Trace.Level.INFO, "Delay: " + df.format(delay) + " seconds");
 		try {
 			sleep(delay);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-			Thread.currentThread().interrupt();  // Properly handle the interrupt
 		}
 	}
 
 	protected abstract void initialization();
-	protected abstract void runEvent(Event event);
+
+	protected abstract void runEvent(Event t);
+
 	protected abstract void results();
 }

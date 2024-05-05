@@ -4,149 +4,216 @@ import controller.Controller;
 import controller.IControllerVtoM;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import simu.framework.Trace;
 import simu.framework.Trace.Level;
+import simu.model.ArrivalPattern;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SimulatorGUI extends Application implements ISimulatorUI {
 
-	// Controller object (UI needs)
 	private IControllerVtoM controller;
-
-	// UI Components:
-	private TextField time;
-	private TextField delay;
-	private Label results;
-	private Label timeLabel;
-	private Label delayLabel;
-	private Label resultLabel;
-
-	private Button startButton;
-	private Button slowButton;
-	private Button speedUpButton;
-
+	private TextField customerAmount;
+	private TextArea resultsTextArea;
 	private IVisualisation display;
+	private ComboBox<Double> timeDropdown;
+	private ComboBox<String> delayDropdown;
+	private Button startButton;
 
+	private static final double[] exampleTimes = {30.0, 60.0, 120.0}; // Predefined example times
 
 	@Override
-	public void init(){
+	public void init() {
 		Trace.setTraceLevel(Level.INFO);
+		display = new Visualisation(800, 600);
 		controller = new Controller(this);
 	}
 
 	@Override
 	public void start(Stage primaryStage) {
-		// UI creation
-		try {
-			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-				@Override
-				public void handle(WindowEvent t) {
-					Platform.exit();
-					System.exit(0);
-				}
-			});
+		primaryStage.setOnCloseRequest(t -> {
+			Platform.exit();
+			System.exit(0);
+		});
 
-			primaryStage.setTitle("Simulator");
+		// Create a PrintStream that appends text to the resultsTextArea
+		PrintStream printStream = new PrintStream(new ByteArrayOutputStream()) {
+			@Override
+			public void println(String x) {
+				Platform.runLater(() -> resultsTextArea.appendText(x + "\n\n"));
+			}
+		};
+		System.setOut(printStream);
 
-			startButton = new Button();
-			startButton.setText("Start simulation");
-			startButton.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent event) {
-					controller.startSimulation();
-					startButton.setDisable(true);
-				}
-			});
+		// Set up the stage
+		primaryStage.setTitle("Simulator");
 
-			slowButton = new Button();
-			slowButton.setText("Slow down");
-			slowButton.setOnAction(e -> controller.decreaseSpeed());
+		// Instantiate customerAmount TextField
+		customerAmount = new TextField("Enter amount");
+		customerAmount.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+		customerAmount.setPrefWidth(150);
 
-			speedUpButton = new Button();
-			speedUpButton.setText("Speed up");
-			speedUpButton.setOnAction(e -> controller.increaseSpeed());
+		// Allow only numeric characters
+		customerAmount.addEventFilter(KeyEvent.KEY_TYPED, event -> {
+			String character = event.getCharacter();
+			// Allow only numeric characters or the backspace key
+			if (!character.matches("[0-9\b]")) {
+				System.out.println("Only numbers are allowed.");
+				event.consume();
+			}
+		});
 
-			timeLabel = new Label("Simulation time:");
-			timeLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-			time = new TextField("Give time");
-			time.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-			time.setPrefWidth(150);
+		// Set up the startButton
+		startButton = new Button("Start simulation");
+		startButton.setOnAction(event -> {
+			controller.startSimulation();
+			startButton.setDisable(true);
+		});
 
-			delayLabel = new Label("Delay:");
-			delayLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-			delay = new TextField("Give delay");
-			delay.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-			delay.setPrefWidth(150);
+		// Set up other buttons
+		Button slowButton = new Button("Slow down");
+		slowButton.setOnAction(e -> controller.decreaseSpeed());
 
-			resultLabel = new Label("Total time:");
-			resultLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-			results = new Label();
-			results.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-			results.setPrefWidth(150);
+		Button speedUpButton = new Button("Speed up");
+		speedUpButton.setOnAction(e -> controller.increaseSpeed());
 
-			HBox hBox = new HBox();
-			hBox.setPadding(new Insets(15, 12, 15, 12)); // margins up, right, bottom, left
-			hBox.setSpacing(10);   // node distance 10 pixel
+		Button exitButton = new Button("Exit");
+		exitButton.setOnAction(e -> {
+			Platform.exit();
+			System.exit(0);
+		});
 
-			GridPane grid = new GridPane();
-			grid.setAlignment(Pos.CENTER);
-			grid.setVgap(10);
-			grid.setHgap(5);
+		// Set up labels and dropdowns
+		Label customerLabel = new Label("Customer amount:");
+		customerLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
 
-			grid.add(timeLabel, 0, 0);   // column, row
-			grid.add(time, 1, 0);
-			grid.add(delayLabel, 0, 1);
-			grid.add(delay, 1, 1);
-			grid.add(resultLabel, 0, 2);
-			grid.add(results, 1, 2);
-			grid.add(startButton,0, 3);
-			grid.add(speedUpButton, 0, 4);
-			grid.add(slowButton, 1, 4);
+		Label patternLabel = new Label("Customer traffic:");
+		patternLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
 
-			display = new Visualisation2(400,200);
+		ComboBox<ArrivalPattern> arrivalPatternDropdown = new ComboBox<>();
+		arrivalPatternDropdown.getItems().setAll(ArrivalPattern.values());
+		arrivalPatternDropdown.setValue(ArrivalPattern.MORNINGRUSH);
+		arrivalPatternDropdown.setOnAction(e -> controller.setArrivalPattern(arrivalPatternDropdown.getValue()));
 
-			// Fill the box:
-			hBox.getChildren().addAll(grid, (Canvas) display);
+		Label delayLabel = new Label("Simulation speed:");
+		delayLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+		delayDropdown = new ComboBox<>();
+		delayDropdown.getItems().addAll("SLOW", "NORMAL", "FAST");
+		delayDropdown.setValue("NORMAL");
 
-			Scene scene = new Scene(hBox);
-			primaryStage.setScene(scene);
-			primaryStage.show();
-		} catch(Exception e) {
-			e.printStackTrace();
+		List<Double> exampleTimesList = new ArrayList<>();
+		for (double time : exampleTimes) {
+			exampleTimesList.add(time);
+		}
+		timeDropdown = new ComboBox<>();
+		timeDropdown.getItems().addAll(exampleTimesList);
+		timeDropdown.setValue(exampleTimesList.get(0));
+
+		// Set up the grid layout
+		GridPane grid = new GridPane();
+		grid.setAlignment(Pos.TOP_LEFT);
+		grid.setVgap(10);
+		grid.setHgap(5);
+
+		grid.add(customerLabel, 0, 0);
+		grid.add(customerAmount, 1, 0);
+		grid.add(patternLabel, 0, 1);
+		grid.add(arrivalPatternDropdown, 1, 1);
+		grid.add(delayLabel, 0, 2);
+		grid.add(delayDropdown, 1, 2);
+		grid.add(startButton, 0, 3);
+		grid.add(slowButton, 1, 3);
+		grid.add(speedUpButton, 2, 3);
+		grid.add(exitButton, 0, 6);
+
+		// TextArea to display simulation results
+		resultsTextArea = new TextArea();
+		resultsTextArea.setEditable(false);
+		resultsTextArea.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+		resultsTextArea.setWrapText(true);
+		resultsTextArea.setPrefHeight(500);
+		resultsTextArea.setPrefWidth(300);
+
+		// Add padding to the TextArea
+		resultsTextArea.setPadding(new Insets(5));
+
+		ScrollPane scrollPane = new ScrollPane(resultsTextArea);
+		scrollPane.setFitToWidth(true);
+		scrollPane.setFitToHeight(true);
+		scrollPane.setPadding(new Insets(10));
+
+		// Set up for the layout
+		VBox leftVBox = new VBox(10);
+		leftVBox.setPadding(new Insets(15));
+		leftVBox.getChildren().addAll(grid, (Visualisation) display);
+
+		BorderPane borderPane = new BorderPane();
+		borderPane.setLeft(leftVBox);
+		borderPane.setCenter(scrollPane);
+
+		primaryStage.setMinWidth(1300);
+		primaryStage.setMaxWidth(1400);
+		primaryStage.setMinHeight(900);
+		primaryStage.setMaxHeight(900);
+
+		// Set up for the scene
+		Scene scene = new Scene(borderPane, 1200, 800);
+		primaryStage.setScene(scene);
+		primaryStage.show();
+	}
+
+	@Override
+	public double getTime() {
+		return timeDropdown.getValue();
+	}
+
+	// Speed for the simulation
+	@Override
+	public long getDelay() {
+		switch (delayDropdown.getValue()) {
+			case "SLOW":
+				return 1000;
+			case "NORMAL":
+				return 500;
+			case "FAST":
+				return 10;
+			default:
+				return 500;
 		}
 	}
 
-	/* UI interface methods (controller calls) */
 	@Override
-	public double getTime(){
-		return Double.parseDouble(time.getText());
-	}
-
-	@Override
-	public long getDelay(){
-		return Long.parseLong(delay.getText());
+	public int getCustomerAmount() {
+		try {
+			return Integer.parseInt(customerAmount.getText());
+		} catch (NumberFormatException e) {
+			appendResults("Invalid customer amount, defaulting to 150.");
+			return 150;
+		}
 	}
 
 	@Override
 	public void setEndingTime(double time) {
-		DecimalFormat formatter = new DecimalFormat("#0.00");
-		this.results.setText(formatter.format(time));
+		Platform.runLater(() -> {
+			DecimalFormat formatter = new DecimalFormat("#0.00");
+			resultsTextArea.appendText("Ending time: " + formatter.format(time) + "\n");
+			startButton.setDisable(false);
+		});
 	}
 
 	@Override
@@ -154,7 +221,21 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 		return display;
 	}
 
-	/* JavaFX-application (UI) start-up */
+	@Override
+	public void appendResults(String result) {
+		Platform.runLater(() -> resultsTextArea.appendText(result + "\n"));
+	}
+
+	@Override
+	public void setDelay(long delay) {
+
+	}
+
+	@Override
+	public void setArrivalPattern(ArrivalPattern arrivalPattern) {
+
+	}
+
 	public static void main(String[] args) {
 		launch(args);
 	}

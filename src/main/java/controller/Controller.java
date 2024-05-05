@@ -1,68 +1,126 @@
 package controller;
 
 import javafx.application.Platform;
-import simu.framework.IEngine;
+import simu.model.ArrivalPattern;
 import simu.model.MyEngine;
 import view.ISimulatorUI;
+import view.IVisualisation;
 
-/**
- * Controller class manages the interaction between the UI and the simulation engine.
- * It controls the simulation flow and updates the UI based on simulation events.
- */
 public class Controller implements IControllerVtoM, IControllerMtoV {
-	private IEngine engine;
+	private MyEngine engine;
 	private ISimulatorUI ui;
+	private IVisualisation visualisation;
+	private ArrivalPattern desiredPattern;
+	private boolean isSimulationStarted = false;
 
-	/**
-	 * Constructs a Controller with a reference to the simulator UI.
-	 * @param ui the simulator UI interface
-	 */
 	public Controller(ISimulatorUI ui) {
 		this.ui = ui;
+		this.visualisation = ui.getVisualisation();
 	}
 
-	/**
-	 * Starts the simulation by creating a new engine instance and initializing it with UI parameters.
-	 */
+	@Override
+	public void visualiseCustomer(int servicePoint) {
+		if (visualisation != null) {
+			Platform.runLater(() -> visualisation.newCustomer(servicePoint));
+		} else {
+			System.out.println("Error: Visualisation is not initialized.");
+		}
+	}
+
 	@Override
 	public void startSimulation() {
-		engine = new MyEngine(this);  // Create a new Engine thread for every simulation
-		engine.setSimulationTime(ui.getTime());  // Set simulation end time from UI
-		engine.setDelay(ui.getDelay());          // Set initial delay from UI
-		ui.getVisualisation().clearDisplay();    // Clear visual display before starting
-		((Thread) engine).start();               // Start the engine thread
+		isSimulationStarted = true;
+
+		int maxCustomers;
+		try {
+			maxCustomers = ui.getCustomerAmount();
+		} catch (NumberFormatException e) {
+			maxCustomers = 150;
+			System.out.println("Invalid input. Setting max customers to 150 by default.");
+		}
+
+		engine = new MyEngine(this, maxCustomers);
+		engine.setSimulationTime(ui.getTime());
+		engine.setDelay(ui.getDelay());
+
+		if (desiredPattern != null) {
+			engine.setArrivalPattern(desiredPattern);
+			System.out.println("Arrival pattern set to: " + describePattern(desiredPattern));
+		}
+
+		if (visualisation != null) {
+			visualisation.clearDisplay();
+		} else {
+			System.out.println("Error: Visualisation is not initialized.");
+		}
+
+		new Thread(engine).start();
 	}
 
-	/**
-	 * Decreases the simulation speed by increasing the delay between events.
-	 */
 	@Override
 	public void decreaseSpeed() {
-		engine.setDelay((long) (engine.getDelay() * 1.10));  // Increase delay by 10%
+		if (ui != null) {
+			long currentDelay = ui.getDelay();
+			ui.setDelay((long) (currentDelay * 1.10));
+		} else {
+			System.out.println("Error: UI is not initialized.");
+		}
 	}
 
-	/**
-	 * Increases the simulation speed by decreasing the delay between events.
-	 */
 	@Override
 	public void increaseSpeed() {
-		engine.setDelay((long) (engine.getDelay() * 0.9));   // Decrease delay by 10%
+		if (engine != null) {
+			engine.setDelay((long) (engine.getDelay() * 0.90));
+		}
+		if (ui != null) {
+			ui.setDelay(engine != null ? engine.getDelay() : 0);
+		} else {
+			System.out.println("Error: UI is not initialized.");
+		}
 	}
 
-	/**
-	 * Passes the simulation end time to the UI to display.
-	 * @param time the end time of the simulation
-	 */
 	@Override
 	public void showEndTime(double time) {
-		Platform.runLater(() -> ui.setEndingTime(time));  // Update UI on the JavaFX thread
+		Platform.runLater(() -> ui.setEndingTime(time));
 	}
 
-	/**
-	 * Triggers the UI to visualize a new customer.
-	 */
 	@Override
-	public void visualiseCustomer() {
-		Platform.runLater(() -> ui.getVisualisation().newCustomer());  // Add new customer on the JavaFX thread
+	public void setArrivalPattern(ArrivalPattern pattern) {
+		if (ui != null) {
+			ui.setArrivalPattern(pattern);
+			System.out.println("Arrival pattern set to: " + describePattern(pattern));
+		} else {
+			desiredPattern = pattern;
+			System.out.println("Setting desired pattern to: " + describePattern(pattern));
+		}
+	}
+
+	private String describePattern(ArrivalPattern pattern) {
+		switch (pattern) {
+			case MORNINGRUSH:
+				return "Morning Rush (High frequency of customers)";
+			case MIDDAYLULL:
+				return "Midday Lull (Low frequency of customers)";
+			case AFTERNOONRUSH:
+				return "Afternoon Rush (High frequency of customers)";
+			default:
+				return "Unknown pattern";
+		}
+	}
+
+	public void setMorningRush() {
+		setArrivalPattern(ArrivalPattern.MORNINGRUSH);
+	}
+
+	public void setMiddayLull() {
+		setArrivalPattern(ArrivalPattern.MIDDAYLULL);
+	}
+
+	public void setAfternoonRush() {
+		setArrivalPattern(ArrivalPattern.AFTERNOONRUSH);
+	}
+
+	public boolean getIsSimulationStarted() {
+		return isSimulationStarted;
 	}
 }

@@ -3,7 +3,7 @@ package simu.framework;
 public class Trace {
 	public enum Level { INFO, WAR, ERR }
 	private static Level traceLevel;
-	
+
 	public static void setTraceLevel(Level lvl){
 		traceLevel = lvl;
 	}

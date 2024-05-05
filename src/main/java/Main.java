@@ -1,8 +1,7 @@
 import view.SimulatorGUI;
 
-public class Main { // Simulator using Java FX
+public class Main {
 	public static void main(String args[]) {
 		SimulatorGUI.main(args);
 	}
 }
-// testiä testiä
