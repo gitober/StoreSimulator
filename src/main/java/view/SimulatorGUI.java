@@ -211,7 +211,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 	public void setEndingTime(double time) {
 		Platform.runLater(() -> {
 			DecimalFormat formatter = new DecimalFormat("#0.00");
-			resultsTextArea.appendText("Ending time: " + formatter.format(time) + "\n");
+			resultsTextArea.appendText("Ending time: " + formatter.format(time) + "\n\n");
 			startButton.setDisable(false);
 		});
 	}
@@ -223,7 +223,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 
 	@Override
 	public void appendResults(String result) {
-		Platform.runLater(() -> resultsTextArea.appendText(result + "\n"));
+		Platform.runLater(() -> resultsTextArea.appendText(result + "\n\n"));
 	}
 
 	@Override
@@ -233,7 +233,6 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 
 	@Override
 	public void setArrivalPattern(ArrivalPattern pattern) {
-		System.out.println("Setting arrival pattern in the UI: " + pattern);
 	}
 
 	public TextArea getResultsTextArea() {

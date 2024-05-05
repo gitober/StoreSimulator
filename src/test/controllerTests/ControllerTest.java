@@ -100,14 +100,14 @@ class ControllerTest extends ApplicationTest {
 
     @Test
     void showEndTime_WithValidTime() throws InterruptedException {
-        int servicePoint = 1;
+        double endTime = 20.0;
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {
-            controller.showEndTime(20.0);
+            controller.showEndTime(endTime);
             latch.countDown();
         });
         latch.await();
-        verify(mockUi).setEndingTime(20.0);
+        verify(mockUi).setEndingTime(endTime);
     }
 
     @Test

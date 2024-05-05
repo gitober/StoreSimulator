@@ -24,13 +24,15 @@ public class Customer {
 		id = nextId++;
 		arrivalTime = Clock.getInstance().getTime();
 
-		// Visit all service points sequentially
-		servicePoints = new ArrayList<>(List.of(1, 2, 3, 4)); // Customer Service Desk, Deli Counter, Vegetable Section, Cashier
+		// Generate a list of service points in random order except for the last point
+		List<Integer> points = Arrays.asList(1, 2, 3);
+		Collections.shuffle(points);
+		servicePoints = new ArrayList<>(points);
+		servicePoints.add(4); // Cashier is always the last stop
 
 		serviceTimes = new LinkedHashMap<>();
 		Trace.out(Trace.Level.INFO, "Customer #" + id + " has arrived at the store at " + formatTime(arrivalTime));
 	}
-
 
 
 	public String getQueueStatus(int queueLength) {
@@ -40,7 +42,6 @@ public class Customer {
 			return "Customer #" + id + " is in queue";
 		}
 	}
-
 
 	public int getNextServicePoint() {
 		return servicePoints.isEmpty() ? -1 : servicePoints.remove(0);
@@ -102,7 +103,7 @@ public class Customer {
 	}
 
 	public void recordSummary() {
-		summary.append("\nSummary for Customer #").append(id).append(":\n");
+		summary.append("\nSummary for Customer #").append(id).append(":\n\n");
 		double previousTime = arrivalTime;
 		for (Map.Entry<Integer, Double> entry : serviceTimes.entrySet()) {
 			int servicePoint = entry.getKey();
@@ -113,21 +114,22 @@ public class Customer {
 					.append(" arrived at ").append(getServicePointName(servicePoint))
 					.append(" at ").append(formatTime(arrival))
 					.append(", left at ").append(formatTime(removed))
-					.append(", and spent ").append(df.format(timeSpent)).append(" minutes on the queue.\n");
+					.append(", and spent ").append(df.format(timeSpent)).append(" minutes on the queue.\n\n");
 			previousTime = removed;
 		}
 
 		removalTime = previousTime;
 		summary.append("Customer #").append(id)
-				.append(" has exited the store at ").append(formatTime(removalTime)).append("\n");
+				.append(" has exited the store at ").append(formatTime(removalTime)).append("\n\n");
 		double totalQueueTime = removalTime - arrivalTime;
 		summary.append("Customer #").append(id)
-				.append(" spent a total of ").append(df.format(totalQueueTime)).append(" minutes in the queues.\n");
+				.append(" spent a total of ").append(df.format(totalQueueTime)).append(" minutes in the queues.\n\n");
 		sum += totalQueueTime;
 		double averageQueueTime = sum / (double) nextId;
 		summary.append("The average time customers have spent in the queues so far is: ")
 				.append(df.format(averageQueueTime)).append(" minutes\n");
 	}
+
 
 	public String getSummary() {
 		return summary.toString();

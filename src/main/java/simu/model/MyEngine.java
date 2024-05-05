@@ -27,7 +27,7 @@ public class MyEngine extends Engine {
 		servicePoints[3] = new ServicePoint(new Normal(4, 2), eventList, EventType.CASHIER);
 		arrivalProcess = new ArrivalProcess(new Negexp(10, 5), eventList, EventType.ARRIVAL, maxCustomers);
 
-		events = new ArrayList<>(); // Initialize events list
+		events = new ArrayList<>();
 	}
 
 	public List<Event> getEventList() {
@@ -50,19 +50,18 @@ public class MyEngine extends Engine {
 	public void initialization() {
 		Distributions distributions = new Distributions();
 		ArrivalTimeGenerator arrivalTimeGenerator = new ArrivalTimeGenerator(distributions);
-		double lambda = 0.1; // Adjust this value as needed
+		double lambda = 0.1;
 
-		// Adjusted logic to limit customers to maxCustomers
 		for (int i = 1; i <= maxCustomers; i++) {
 			double arrivalTime = arrivalTimeGenerator.generateArrivalTime(lambda);
 			Event arrivalEvent = new Event(EventType.ARRIVAL, arrivalTime);
 			eventList.add(arrivalEvent);
-			events.add(arrivalEvent); // Add the event to the events list as well
+			events.add(arrivalEvent);
 		}
 	}
 
 	@Override
-    public void runEvent(Event event) {
+	public void runEvent(Event event) {
 		Customer customer;
 		int currentServicePoint;
 		double queueTime;
@@ -92,7 +91,7 @@ public class MyEngine extends Engine {
 			case CASHIER:
 				currentServicePoint = ((EventType) event.getType()).ordinal();
 				customer = servicePoints[currentServicePoint - 1].removeQueue();
-				if (customer != null) { // Check if customer is null
+				if (customer != null) {
 					queueTime = Clock.getInstance().getTime() - customer.getArrivalTime();
 					serviceTime = Clock.getInstance().getTime();
 					queueTime = customer.queueTime(currentServicePoint, queueTime);
@@ -118,6 +117,7 @@ public class MyEngine extends Engine {
 		}
 	}
 
+
 	@Override
 	protected void results() {
 		controller.showEndTime(Clock.getInstance().getTime());
@@ -127,22 +127,24 @@ public class MyEngine extends Engine {
 	}
 
 	public void setArrivalPattern(ArrivalPattern pattern) {
+		String message;
 		switch (pattern) {
 			case MORNINGRUSH:
 				arrivalProcess = new ArrivalProcess(new Normal(3, 1), eventList, EventType.ARRIVAL, maxCustomers);
-				System.out.println("Setting arrival pattern: Morning Rush (frequent arrivals).");
+				message = "Setting arrival pattern: Morning Rush (frequent arrivals).";
 				break;
 			case MIDDAYLULL:
 				arrivalProcess = new ArrivalProcess(new Negexp(10), eventList, EventType.ARRIVAL, maxCustomers);
-				System.out.println("Setting arrival pattern: Midday Lull (less frequent arrivals).");
+				message = "Setting arrival pattern: Midday Lull (less frequent arrivals).";
 				break;
 			case AFTERNOONRUSH:
 				arrivalProcess = new ArrivalProcess(new Normal(3, 1), eventList, EventType.ARRIVAL, maxCustomers);
-				System.out.println("Setting arrival pattern: Afternoon Rush (frequent arrivals).");
+				message = "Setting arrival pattern: Afternoon Rush (frequent arrivals).";
 				break;
 			default:
-				System.out.println("Unknown arrival pattern.");
+				message = "Unknown arrival pattern.";
 				break;
 		}
+		System.out.println(message);
 	}
 }
