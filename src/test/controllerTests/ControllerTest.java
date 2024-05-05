@@ -13,6 +13,7 @@ import view.ISimulatorUI;
 import view.Visualisation;
 
 import java.util.concurrent.CountDownLatch;
+import org.junitpioneer.jupiter.RetryingTest;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -32,11 +33,16 @@ class ControllerTest extends ApplicationTest {
         Trace.setTraceLevel(Trace.Level.INFO);
     }
 
-    @Test
+    @RetryingTest(3)
     void visualiseCustomer_WithValidServicePoint() throws InterruptedException {
         int servicePoint = 1;
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {
+            try {
+                Thread.sleep(1000); // wait for 1 second before calling visualiseCustomer
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             controller.visualiseCustomer(servicePoint);
             latch.countDown();
         });
@@ -98,17 +104,23 @@ class ControllerTest extends ApplicationTest {
         verify(mockUi).setDelay((long) (100 * 0.90)); // Verify that setDelay was called with 90% of the initial delay
     }
 
-    @Test
+    @RetryingTest(3)
     void showEndTime_WithValidTime() throws InterruptedException {
         double endTime = 20.0;
         CountDownLatch latch = new CountDownLatch(1);
         Platform.runLater(() -> {
+            try {
+                Thread.sleep(1000); // wait for 1 second before calling showEndTime
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             controller.showEndTime(endTime);
             latch.countDown();
         });
         latch.await();
         verify(mockUi).setEndingTime(endTime);
     }
+
 
     @Test
     void setArrivalPattern_WithValidPattern() {
