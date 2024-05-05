@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SimulatorGUI extends Application implements ISimulatorUI {
@@ -106,9 +107,14 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 		patternLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
 
 		ComboBox<ArrivalPattern> arrivalPatternDropdown = new ComboBox<>();
-		arrivalPatternDropdown.getItems().setAll(ArrivalPattern.values());
+		arrivalPatternDropdown.getItems().setAll(
+				Arrays.stream(ArrivalPattern.values())
+						.filter(pattern -> pattern != ArrivalPattern.CONSTANT)
+						.toList()
+		);
 		arrivalPatternDropdown.setValue(ArrivalPattern.MORNINGRUSH);
 		arrivalPatternDropdown.setOnAction(e -> controller.setArrivalPattern(arrivalPatternDropdown.getValue()));
+
 
 		Label delayLabel = new Label("Simulation speed:");
 		delayLabel.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
