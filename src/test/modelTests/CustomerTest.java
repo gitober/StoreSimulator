@@ -1,3 +1,5 @@
+package modelTests;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import simu.framework.Trace;

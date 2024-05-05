@@ -1,6 +1,7 @@
 package simu.framework;
 
 import controller.IControllerMtoV;
+import simu.model.MyEngine;
 import simu.model.ServicePoint;
 
 import java.text.DecimalFormat;
@@ -49,13 +50,13 @@ public abstract class Engine extends Thread implements IEngine {
 		results();
 	}
 
-	private void runBEvents() {
+	public void runBEvents() {
 		while (!eventList.isEmpty() && eventList.getNextTime() == clock.getTime()) {
 			runEvent(eventList.remove());
 		}
 	}
 
-	private void tryCEvents() {
+	public void tryCEvents() {
 		if (servicePoints == null) {
 			return;
 		}
@@ -71,7 +72,7 @@ public abstract class Engine extends Thread implements IEngine {
 		return eventList.getNextTime();
 	}
 
-	private boolean simulate() {
+	public boolean simulate() {
 		DecimalFormat df = new DecimalFormat("#0.00");
 		double currentTime = clock.getTime();
 		// Trace.out(Trace.Level.INFO, "Current Time: " + df.format(currentTime) + " seconds");
@@ -88,9 +89,23 @@ public abstract class Engine extends Thread implements IEngine {
 		}
 	}
 
+	public void setEventList(EventList eventList) {
+		this.eventList = eventList;
+	}
+
+	public void setServicePoints(ServicePoint[] servicePoints) {
+		this.servicePoints = servicePoints;
+	}
+
+	public static class ConcreteEngine extends MyEngine {
+		public ConcreteEngine(IControllerMtoV controller, int maxCustomers) {
+			super(controller, maxCustomers);
+		}
+	}
+
 	protected abstract void initialization();
 
-	protected abstract void runEvent(Event t);
+	public abstract void runEvent(Event t);
 
 	protected abstract void results();
 }

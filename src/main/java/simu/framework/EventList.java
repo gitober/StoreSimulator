@@ -21,4 +21,8 @@ public class EventList {
 	public boolean isEmpty() {
 		return events.isEmpty();
 	}
+
+	public int size() {
+		return events.size();
+	}
 }

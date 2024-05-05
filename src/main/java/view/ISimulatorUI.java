@@ -9,7 +9,6 @@ public interface ISimulatorUI {
 	void setEndingTime(double time);
 	IVisualisation getVisualisation();
 	void appendResults(String text);
-	void setDelay(long delay);// Add this method
-
+	void setDelay(long delay);
 	void setArrivalPattern(ArrivalPattern arrivalPattern);
 }

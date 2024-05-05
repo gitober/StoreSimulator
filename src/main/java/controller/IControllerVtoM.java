@@ -7,4 +7,5 @@ public interface IControllerVtoM {
 	void increaseSpeed();
 	void decreaseSpeed();
 	void setArrivalPattern(ArrivalPattern pattern);
+	void setSimulationSpeed(long delay);
 }

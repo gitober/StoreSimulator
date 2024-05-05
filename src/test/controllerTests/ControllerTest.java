@@ -1,3 +1,5 @@
+package controllerTests;
+
 import controller.Controller;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -6,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
 import simu.framework.Trace;
 import simu.model.ArrivalPattern;
+import simu.model.MyEngine;
 import view.ISimulatorUI;
 import view.Visualisation;
 
@@ -30,10 +33,15 @@ class ControllerTest extends ApplicationTest {
     }
 
     @Test
-    void visualiseCustomer_WithValidServicePoint() {
+    void visualiseCustomer_WithValidServicePoint() throws InterruptedException {
         int servicePoint = 1;
-        controller.visualiseCustomer(servicePoint);
-        verify(mockUi.getVisualisation()).newCustomer(servicePoint);
+        CountDownLatch latch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            controller.visualiseCustomer(servicePoint);
+            latch.countDown();
+        });
+        latch.await();
+        verify(mockVisualisation).newCustomer(servicePoint);
     }
 
     @Test
@@ -63,14 +71,31 @@ class ControllerTest extends ApplicationTest {
 
     @Test
     void decreaseSpeed_WithValidEngine() {
+        // Arrange
+        MyEngine mockEngine = mock(MyEngine.class);
+        when(mockEngine.getDelay()).thenReturn(100L); // Set the initial delay to 100
+        controller.setEngine(mockEngine); // Set the mock engine in the controller
+        when(mockUi.getDelay()).thenReturn(100L); // Set the initial delay in UI to 100
+
+        // Act
         controller.decreaseSpeed();
-        verify(mockUi).setDelay(anyLong());
+
+        // Assert
+        verify(mockUi).setDelay((long) (100 * 1.10)); // Verify that setDelay was called with 110% of the initial delay
     }
 
     @Test
     void increaseSpeed_WithValidEngine() {
+        // Arrange
+        MyEngine mockEngine = mock(MyEngine.class);
+        when(mockEngine.getDelay()).thenReturn(100L); // Set the initial delay to 100
+        controller.setEngine(mockEngine); // Set the mock engine in the controller
+
+        // Act
         controller.increaseSpeed();
-        verify(mockUi).setDelay(anyLong());
+
+        // Assert
+        verify(mockUi).setDelay((long) (100 * 0.90)); // Verify that setDelay was called with 90% of the initial delay
     }
 
     @Test

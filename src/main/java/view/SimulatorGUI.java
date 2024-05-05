@@ -1,4 +1,4 @@
-package view;
+package view;// package view;
 
 import controller.Controller;
 import controller.IControllerVtoM;
@@ -228,12 +228,24 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 
 	@Override
 	public void setDelay(long delay) {
-
+		controller.setSimulationSpeed(delay);
 	}
 
 	@Override
-	public void setArrivalPattern(ArrivalPattern arrivalPattern) {
+	public void setArrivalPattern(ArrivalPattern pattern) {
+		System.out.println("Setting arrival pattern in the UI: " + pattern);
+	}
 
+	public TextArea getResultsTextArea() {
+		return resultsTextArea;
+	}
+
+	public ComboBox<Double> getTimeDropdown() {
+		return timeDropdown;
+	}
+
+	public ComboBox<String> getDelayDropdown() {
+		return delayDropdown;
 	}
 
 	public static void main(String[] args) {

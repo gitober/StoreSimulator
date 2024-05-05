@@ -38,6 +38,14 @@ public class Visualisation extends IVisualisation {
 		this.getChildren().add(pane);
 	}
 
+	public GraphicsContext getGraphicsContext2D() {
+		return gc;
+	}
+
+	public Pane getPane() {
+		return pane;
+	}
+
 	@Override
 	public void clearDisplay() {
 		gc.setFill(Color.LIGHTBLUE);
@@ -51,6 +59,9 @@ public class Visualisation extends IVisualisation {
 
 	@Override
 	public void newCustomer(int servicePoint) {
+		if (servicePoint < 1 || servicePoint > 4) {
+			throw new IllegalArgumentException("Service point must be between 1 and 4");
+		}
 		Color color;
 		switch (servicePoint) {
 			case 1:
@@ -116,6 +127,5 @@ public class Visualisation extends IVisualisation {
 		transition.setOnFinished(event -> pane.getChildren().remove(circle));
 		transition.play();
 	}
-
 
 }

@@ -61,7 +61,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 	public void decreaseSpeed() {
 		if (ui != null) {
 			long currentDelay = ui.getDelay();
-			ui.setDelay((long) (currentDelay * 1.10));
+			setSimulationSpeed((long) (currentDelay * 1.10));
 		} else {
 			System.out.println("Error: UI is not initialized.");
 		}
@@ -70,14 +70,10 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 	@Override
 	public void increaseSpeed() {
 		if (engine != null) {
-			engine.setDelay((long) (engine.getDelay() * 0.90));
-		}
-		if (ui != null) {
-			ui.setDelay(engine != null ? engine.getDelay() : 0);
-		} else {
-			System.out.println("Error: UI is not initialized.");
+			setSimulationSpeed((long) (engine.getDelay() * 0.90));
 		}
 	}
+
 
 	@Override
 	public void showEndTime(double time) {
@@ -85,15 +81,26 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 	}
 
 	@Override
-	public void setArrivalPattern(ArrivalPattern pattern) {
-		if (ui != null) {
-			ui.setArrivalPattern(pattern);
-			System.out.println("Arrival pattern set to: " + describePattern(pattern));
-		} else {
-			desiredPattern = pattern;
-			System.out.println("Setting desired pattern to: " + describePattern(pattern));
+	public void setSimulationSpeed(long delay) {
+		if (engine != null) {
+			engine.setDelay(delay);
+			ui.setDelay(delay);
 		}
 	}
+
+	@Override
+	public void setArrivalPattern(ArrivalPattern pattern) {
+		desiredPattern = pattern;
+		if (engine != null) {
+			engine.setArrivalPattern(pattern);
+		}
+		// Optionally update the UI as well
+		if (ui != null) {
+			ui.setArrivalPattern(pattern);
+		}
+		System.out.println("Arrival pattern set to: " + describePattern(pattern));
+	}
+
 
 	private String describePattern(ArrivalPattern pattern) {
 		switch (pattern) {
@@ -122,5 +129,9 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 
 	public boolean getIsSimulationStarted() {
 		return isSimulationStarted;
+	}
+
+	public void setEngine(MyEngine engine) {
+		this.engine = engine;
 	}
 }

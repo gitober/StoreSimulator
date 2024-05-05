@@ -5,8 +5,8 @@ import eduni.distributions.Distributions;
 public class ArrivalTimeGenerator {
     private Distributions distributions;
 
-    public ArrivalTimeGenerator() {
-        distributions = new Distributions();
+    public ArrivalTimeGenerator(Distributions distributions) {
+        this.distributions = distributions;
     }
 
     public double generateArrivalTime(double lambda) {
