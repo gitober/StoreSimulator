@@ -4,12 +4,17 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * This class manages the connection to the MariaDB database.
+ * It provides methods to get the connection and to terminate the connection.
+ */
 public class MariaDbConnection {
 
     private static Connection conn = null;
 
     static {
         try {
+            // Load MariaDB JDBC driver
             Class.forName("org.mariadb.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             System.out.println("MariaDB JDBC driver not found.");
@@ -17,6 +22,10 @@ public class MariaDbConnection {
         }
     }
 
+    /**
+     * Returns the connection to the database. If the connection does not exist, it creates a new one.
+     * @return The connection to the database.
+     */
     public static Connection getConnection() {
         if (conn == null) {
             // connect if necessary
@@ -31,6 +40,9 @@ public class MariaDbConnection {
         return conn;
     }
 
+    /**
+     * Terminates the connection to the database if it exists.
+     */
     public static void terminate() {
         try {
             if (conn != null) {
