@@ -12,6 +12,10 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.VLineTo;
 import javafx.util.Duration;
 
+/**
+ * This class represents a visualisation in the user interface.
+ * It extends the IVisualisation class and provides methods to get the graphics context and pane, clear the display, add a new customer, and visualise a customer at a service point.
+ */
 public class Visualisation extends IVisualisation {
 
 	private Canvas canvas;
@@ -21,6 +25,11 @@ public class Visualisation extends IVisualisation {
 	private Pane pane;
 	private double[] startPositions;
 
+	/**
+	 * Constructs a new Visualisation with the given width and height.
+	 * @param w The width of the visualisation.
+	 * @param h The height of the visualisation.
+	 */
 	public Visualisation(int w, int h) {
 		super(w, h);
 		canvas = new Canvas(w, h);
@@ -38,25 +47,44 @@ public class Visualisation extends IVisualisation {
 		this.getChildren().add(pane);
 	}
 
+	/**
+	 * Returns the graphics context of the visualisation.
+	 * @return The graphics context of the visualisation.
+	 */
 	public GraphicsContext getGraphicsContext2D() {
 		return gc;
 	}
 
+	/**
+	 * Returns the pane of the visualisation.
+	 * @return The pane of the visualisation.
+	 */
 	public Pane getPane() {
 		return pane;
 	}
 
+	/**
+	 * Clears the display of the visualisation.
+	 */
 	@Override
 	public void clearDisplay() {
 		gc.setFill(Color.LIGHTBLUE);
 		gc.fillRect(0, 0, canvasWidth, canvasHeight);
 	}
 
+	/**
+	 * Visualises a customer at a service point in the visualisation.
+	 * @param servicePoint The service point where the customer is visualised.
+	 */
 	@Override
 	public void visualiseCustomer(int servicePoint) {
 		newCustomer(servicePoint);
 	}
 
+	/**
+	 * Adds a new customer to the visualisation at a service point.
+	 * @param servicePoint The service point where the customer is added.
+	 */
 	@Override
 	public void newCustomer(int servicePoint) {
 		if (servicePoint < 1 || servicePoint > 4) {
@@ -127,5 +155,4 @@ public class Visualisation extends IVisualisation {
 		transition.setOnFinished(event -> pane.getChildren().remove(circle));
 		transition.play();
 	}
-
 }
