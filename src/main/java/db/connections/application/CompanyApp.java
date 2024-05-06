@@ -27,7 +27,7 @@ public class CompanyApp {
             System.out.println("Customer " + index++ + ":");
             System.out.println("Name: " + emp.getFirstName() + " " + emp.getLastName());
             System.out.println("Email: " + emp.getEmail());
-            System.out.println("Loyal card number: " + emp.getloyal_card_number());
+            System.out.println("Loyal card number: " + emp.getLoyalCardNumber());
             System.out.println();
         }
 
@@ -37,7 +37,7 @@ public class CompanyApp {
             System.out.println("Customer Details for ID 2:");
             System.out.println("Name: " + emp.getFirstName() + " " + emp.getLastName());
             System.out.println("Email: " + emp.getEmail());
-            System.out.println("Loyal card number: " + emp.getloyal_card_number());
+            System.out.println("Loyal card number: " + emp.getLoyalCardNumber());
         } else {
             System.out.println("Customer with ID 2 not found.");
         }
@@ -53,7 +53,7 @@ public class CompanyApp {
             System.out.println("Customer " + index++ + ":");
             System.out.println("Name: " + e.getFirstName() + " " + e.getLastName());
             System.out.println("Email: " + e.getEmail());
-            System.out.println("Loyal card number: " + e.getloyal_card_number());
+            System.out.println("Loyal card number: " + e.getLoyalCardNumber()); // Use variable 'e' instead of 'emp'
             System.out.println();
         }
 

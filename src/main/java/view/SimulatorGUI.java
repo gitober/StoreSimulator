@@ -25,11 +25,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-/**
- * This class represents the graphical user interface for the simulator.
- * It extends the Application class from JavaFX and implements the ISimulatorUI interface.
- * It provides methods to start the application, get the time, delay, and customer amount, set the ending time, delay, and arrival pattern, and append results.
- */
+
 public class SimulatorGUI extends Application implements ISimulatorUI {
 
 	private IControllerVtoM controller;
@@ -41,19 +37,14 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 	private Button startButton;
 
 	private static final double[] exampleTimes = {30.0, 60.0, 120.0}; // Predefined example times
-	/**
-	 * Initializes the simulator GUI.
-	 */
+
 	@Override
 	public void init() {
 		Trace.setTraceLevel(Level.INFO);
 		display = new Visualisation(800, 600);
 		controller = new Controller(this);
 	}
-	/**
-	 * Starts the simulator GUI.
-	 * @param primaryStage The primary stage for this application.
-	 */
+
 	@Override
 	public void start(Stage primaryStage) {
 		primaryStage.setOnCloseRequest(t -> {
@@ -191,18 +182,12 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
-	/**
-	 * Returns the current time of the simulator.
-	 * @return The current time of the simulator.
-	 */
+
 	@Override
 	public double getTime() {
 		return timeDropdown.getValue();
 	}
-	/**
-	 * Returns the delay of the simulator.
-	 * @return The delay of the simulator.
-	 */
+
 	// Speed for the simulation
 	@Override
 	public long getDelay() {
@@ -217,10 +202,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 				return 500;
 		}
 	}
-	/**
-	 * Returns the amount of customers in the simulator.
-	 * @return The amount of customers in the simulator.
-	 */
+
 	@Override
 	public int getCustomerAmount() {
 		try {
@@ -230,10 +212,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 			return 150;
 		}
 	}
-	/**
-	 * Sets the ending time of the simulator.
-	 * @param time The ending time to set.
-	 */
+
 	@Override
 	public void setEndingTime(double time) {
 		Platform.runLater(() -> {
@@ -242,62 +221,38 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 			startButton.setDisable(false);
 		});
 	}
-	/**
-	 * Returns the visualisation of the simulator.
-	 * @return The visualisation of the simulator.
-	 */
+
 	@Override
 	public IVisualisation getVisualisation() {
 		return display;
 	}
-	/**
-	 * Appends the given text to the results of the simulator.
-	 * @param result The text to append to the results.
-	 */
+
 	@Override
 	public void appendResults(String result) {
 		Platform.runLater(() -> resultsTextArea.appendText(result + "\n\n"));
 	}
-	/**
-	 * Sets the delay of the simulator.
-	 * @param delay The delay to set.
-	 */
+
 	@Override
 	public void setDelay(long delay) {
 		controller.setSimulationSpeed(delay);
 	}
-	/**
-	 * Sets the arrival pattern of the simulator.
-	 * @param pattern The arrival pattern to set.
-	 */
+
 	@Override
 	public void setArrivalPattern(ArrivalPattern pattern) {
 	}
-	/**
-	 * Returns the text area for the results.
-	 * @return The text area for the results.
-	 */
+
 	public TextArea getResultsTextArea() {
 		return resultsTextArea;
 	}
-	/**
-	 * Returns the dropdown for the time.
-	 * @return The dropdown for the time.
-	 */
+
 	public ComboBox<Double> getTimeDropdown() {
 		return timeDropdown;
 	}
-	/**
-	 * Returns the dropdown for the delay.
-	 * @return The dropdown for the delay.
-	 */
+
 	public ComboBox<String> getDelayDropdown() {
 		return delayDropdown;
 	}
-	/**
-	 * The main method that starts the application.
-	 * @param args The command line arguments.
-	 */
+
 	public static void main(String[] args) {
 		launch(args);
 	}

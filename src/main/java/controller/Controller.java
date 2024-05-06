@@ -6,11 +6,6 @@ import simu.model.MyEngine;
 import view.ISimulatorUI;
 import view.IVisualisation;
 
-/**
- * This class represents the controller in the MVC pattern.
- * It communicates between the model (MyEngine) and the view (ISimulatorUI and IVisualisation).
- * It implements two interfaces: IControllerVtoM (View to Model) and IControllerMtoV (Model to View).
- */
 public class Controller implements IControllerVtoM, IControllerMtoV {
 	private MyEngine engine;
 	private ISimulatorUI ui;
@@ -18,19 +13,11 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 	private ArrivalPattern desiredPattern;
 	private boolean isSimulationStarted = false;
 
-	/**
-	 * Constructor for the Controller class.
-	 * @param ui The user interface for the simulation.
-	 */
 	public Controller(ISimulatorUI ui) {
 		this.ui = ui;
 		this.visualisation = ui.getVisualisation();
 	}
 
-	/**
-	 * Visualizes a new customer at a service point.
-	 * @param servicePoint The service point where the customer arrives.
-	 */
 	@Override
 	public void visualiseCustomer(int servicePoint) {
 		if (visualisation != null) {
@@ -40,9 +27,6 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 		}
 	}
 
-	/**
-	 * Starts the simulation.
-	 */
 	@Override
 	public void startSimulation() {
 		isSimulationStarted = true;
@@ -73,9 +57,6 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 		new Thread(engine).start();
 	}
 
-	/**
-	 * Decreases the speed of the simulation.
-	 */
 	@Override
 	public void decreaseSpeed() {
 		if (ui != null) {
@@ -86,9 +67,6 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 		}
 	}
 
-	/**
-	 * Increases the speed of the simulation.
-	 */
 	@Override
 	public void increaseSpeed() {
 		if (engine != null) {
@@ -96,19 +74,12 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 		}
 	}
 
-	/**
-	 * Shows the end time of the simulation.
-	 * @param time The end time of the simulation.
-	 */
+
 	@Override
 	public void showEndTime(double time) {
 		Platform.runLater(() -> ui.setEndingTime(time));
 	}
 
-	/**
-	 * Sets the speed of the simulation.
-	 * @param delay The delay time between each step of the simulation.
-	 */
 	@Override
 	public void setSimulationSpeed(long delay) {
 		if (engine != null) {
@@ -117,10 +88,6 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 		}
 	}
 
-	/**
-	 * Sets the arrival pattern of the customers.
-	 * @param pattern The arrival pattern of the customers.
-	 */
 	@Override
 	public void setArrivalPattern(ArrivalPattern pattern) {
 		desiredPattern = pattern;
@@ -134,11 +101,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 		System.out.println("Arrival pattern set to: " + describePattern(pattern));
 	}
 
-	/**
-	 * Describes the arrival pattern.
-	 * @param pattern The arrival pattern.
-	 * @return A string description of the arrival pattern.
-	 */
+
 	private String describePattern(ArrivalPattern pattern) {
 		switch (pattern) {
 			case MORNINGRUSH:
@@ -152,39 +115,22 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 		}
 	}
 
-	/**
-	 * Sets the arrival pattern to Morning Rush.
-	 */
 	public void setMorningRush() {
 		setArrivalPattern(ArrivalPattern.MORNINGRUSH);
 	}
 
-	/**
-	 * Sets the arrival pattern to Midday Lull.
-	 */
 	public void setMiddayLull() {
 		setArrivalPattern(ArrivalPattern.MIDDAYLULL);
 	}
 
-	/**
-	 * Sets the arrival pattern to Afternoon Rush.
-	 */
 	public void setAfternoonRush() {
 		setArrivalPattern(ArrivalPattern.AFTERNOONRUSH);
 	}
 
-	/**
-	 * Checks if the simulation has started.
-	 * @return True if the simulation has started, false otherwise.
-	 */
 	public boolean getIsSimulationStarted() {
 		return isSimulationStarted;
 	}
 
-	/**
-	 * Sets the engine for the simulation.
-	 * @param engine The engine for the simulation.
-	 */
 	public void setEngine(MyEngine engine) {
 		this.engine = engine;
 	}

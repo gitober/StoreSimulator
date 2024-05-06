@@ -1,8 +1,10 @@
 package view;
 
 import javafx.animation.PathTransition;
+import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -12,10 +14,8 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.VLineTo;
 import javafx.util.Duration;
 
-/**
- * This class represents a visualisation in the user interface.
- * It extends the IVisualisation class and provides methods to get the graphics context and pane, clear the display, add a new customer, and visualise a customer at a service point.
- */
+import java.util.*;
+
 public class Visualisation extends IVisualisation {
 
 	private Canvas canvas;
@@ -23,13 +23,19 @@ public class Visualisation extends IVisualisation {
 	private final int canvasWidth;
 	private final int canvasHeight;
 	private Pane pane;
-	private double[] startPositions;
+	private double[][] servicePoints;
+	private List<Queue<Circle>> queues;
+	private boolean[] serving;
+	private Image backgroundImage;
+	private final double queueSpacing = 15.0;
 
-	/**
-	 * Constructs a new Visualisation with the given width and height.
-	 * @param w The width of the visualisation.
-	 * @param h The height of the visualisation.
-	 */
+	// Define the service points
+	private static final int SERVICE_DESK = 0;
+	private static final int DELI_COUNTER = 1;
+	private static final int VEGETABLE_SECTION = 2;
+	private static final int CASHIER = 3;
+	private static final int EXIT = 4;
+
 	public Visualisation(int w, int h) {
 		super(w, h);
 		canvas = new Canvas(w, h);
@@ -37,122 +43,126 @@ public class Visualisation extends IVisualisation {
 		canvasWidth = w;
 		canvasHeight = h;
 		pane = new Pane(canvas);
-		startPositions = new double[]{
-				0, 0, // Top-left corner (service point 1)
-				canvasWidth - 10, 0, // Top-right corner (service point 2)
-				0, canvasHeight - 10, // Bottom-left corner (service point 3)
-				canvasWidth - 10, canvasHeight - 10 // Bottom-right corner (service point 4)
+		servicePoints = new double[][] {
+				{50, 50}, // Top-left corner (Service Desk)
+				{canvasWidth - 50, 50}, // Top-right corner (Deli Counter)
+				{50, canvasHeight - 50}, // Bottom-left corner (Vegetable Section)
+				{canvasWidth - 50, canvasHeight - 50}, // Bottom-right corner (Cashier)
+				{canvasWidth / 2, canvasHeight - 10} // Bottom-middle (Exit)
 		};
+		queues = new ArrayList<>();
+		serving = new boolean[5];
+		for (int i = 0; i < 5; i++) {
+			queues.add(new LinkedList<>());
+			serving[i] = false;
+		}
+
+		// Load the background image
+		backgroundImage = new Image(getClass().getResource("/kauppa.png").toExternalForm());
+
 		clearDisplay();
 		this.getChildren().add(pane);
 	}
 
-	/**
-	 * Returns the graphics context of the visualisation.
-	 * @return The graphics context of the visualisation.
-	 */
 	public GraphicsContext getGraphicsContext2D() {
 		return gc;
 	}
 
-	/**
-	 * Returns the pane of the visualisation.
-	 * @return The pane of the visualisation.
-	 */
 	public Pane getPane() {
 		return pane;
 	}
 
-	/**
-	 * Clears the display of the visualisation.
-	 */
 	@Override
 	public void clearDisplay() {
-		gc.setFill(Color.LIGHTBLUE);
-		gc.fillRect(0, 0, canvasWidth, canvasHeight);
+		if (backgroundImage != null) {
+			gc.drawImage(backgroundImage, 0, 0, canvasWidth, canvasHeight);
+		} else {
+			gc.setFill(Color.LIGHTBLUE);
+			gc.fillRect(0, 0, canvasWidth, canvasHeight);
+		}
 	}
 
-	/**
-	 * Visualises a customer at a service point in the visualisation.
-	 * @param servicePoint The service point where the customer is visualised.
-	 */
 	@Override
 	public void visualiseCustomer(int servicePoint) {
 		newCustomer(servicePoint);
 	}
 
-	/**
-	 * Adds a new customer to the visualisation at a service point.
-	 * @param servicePoint The service point where the customer is added.
-	 */
 	@Override
 	public void newCustomer(int servicePoint) {
-		if (servicePoint < 1 || servicePoint > 4) {
-			throw new IllegalArgumentException("Service point must be between 1 and 4");
-		}
-		Color color;
-		switch (servicePoint) {
-			case 1:
-				color = Color.BLUEVIOLET;
-				break;
-			case 2:
-				color = Color.DARKVIOLET;
-				break;
-			case 3:
-				color = Color.DARKOLIVEGREEN;
-				break;
-			case 4:
-			default:
-				color = Color.INDIANRED;
-				break;
-		}
+		Circle customer = new Circle(10, Color.BLUE);
+		Platform.runLater(() -> {
+			customer.setCenterX(canvasWidth / 2);
+			customer.setCenterY(0);
+			pane.getChildren().add(customer);
+			List<Integer> servicePointsOrder = generateRandomOrder();
+			servicePointsOrder.add(CASHIER); // Last stop is always the cashier
+			servicePointsOrder.add(EXIT); // Then exit
+			customer.setUserData(servicePointsOrder);
+			queues.get(servicePoint).add(customer);
+			serveCustomer(servicePoint, customer);
+		});
+	}
 
-		// Create a circle to represent the customer
-		Circle circle = new Circle(5, color);
-		circle.setCenterX(startPositions[(servicePoint - 1) * 2]);
-		circle.setCenterY(startPositions[(servicePoint - 1) * 2 + 1]);
-		pane.getChildren().add(circle);
+	private List<Integer> generateRandomOrder() {
+		List<Integer> order = new ArrayList<>(Arrays.asList(SERVICE_DESK, DELI_COUNTER, VEGETABLE_SECTION));
+		Collections.shuffle(order);
+		return order;
+	}
 
-		// Define the path based on the service point
-		Path path = new Path();
-		switch (servicePoint) {
-			case 1: // Top-left corner
-				path.getElements().add(new MoveTo(0, 0));
-				path.getElements().add(new HLineTo(canvasWidth / 2));
-				path.getElements().add(new VLineTo(canvasHeight / 2));
-				path.getElements().add(new HLineTo(canvasWidth - 10));
-				path.getElements().add(new VLineTo(canvasHeight - 10));
-				break;
-			case 2: // Top-right corner
-				path.getElements().add(new MoveTo(canvasWidth, 0));
-				path.getElements().add(new HLineTo(canvasWidth / 2));
-				path.getElements().add(new VLineTo(canvasHeight / 2));
-				path.getElements().add(new HLineTo(10));
-				path.getElements().add(new VLineTo(canvasHeight - 10));
-				break;
-			case 3: // Bottom-left corner
-				path.getElements().add(new MoveTo(0, canvasHeight));
-				path.getElements().add(new HLineTo(canvasWidth / 2));
-				path.getElements().add(new VLineTo(canvasHeight / 2));
-				path.getElements().add(new HLineTo(canvasWidth - 10));
-				path.getElements().add(new VLineTo(10));
-				break;
-			case 4: // Bottom-right corner
-				path.getElements().add(new MoveTo(canvasWidth, canvasHeight));
-				path.getElements().add(new HLineTo(canvasWidth / 2));
-				path.getElements().add(new VLineTo(canvasHeight / 2));
-				path.getElements().add(new HLineTo(10));
-				path.getElements().add(new VLineTo(10));
-				break;
-		}
+	private void serveCustomer(int servicePoint, Circle customer) {
+		Queue<Circle> queue = queues.get(servicePoint);
 
-		// Animate the circle along the path
+		// Animate the customer in the queue
+		Platform.runLater(() -> {
+			if (queue.contains(customer) && !serving[servicePoint]) {
+				serving[servicePoint] = true;
+				Circle nextCustomer = queue.poll();
+				if (nextCustomer != null) {
+					moveToNextServicePoint(nextCustomer, servicePoint);
+				}
+				serving[servicePoint] = false;
+			}
+		});
+	}
+
+	private void moveToNextServicePoint(Circle customer, int currentServicePoint) {
+		List<Integer> servicePointsOrder = (List<Integer>) customer.getUserData();
+		if (servicePointsOrder.isEmpty()) return;
+		int nextServicePoint = servicePointsOrder.remove(0);
+		Path path = createPathToServicePoint(customer, nextServicePoint);
 		PathTransition transition = new PathTransition();
-		transition.setNode(circle);
+		transition.setNode(customer);
 		transition.setPath(path);
 		transition.setDuration(Duration.seconds(2));
 		transition.setCycleCount(1);
-		transition.setOnFinished(event -> pane.getChildren().remove(circle));
+		transition.setOnFinished(event -> {
+			if (nextServicePoint == EXIT) {
+				pane.getChildren().remove(customer);
+			} else {
+				queues.get(nextServicePoint).add(customer);
+				serveCustomer(nextServicePoint, customer);
+			}
+		});
 		transition.play();
+	}
+
+	private Path createPathToServicePoint(Circle customer, int servicePoint) {
+		Path path = new Path();
+		path.getElements().add(new MoveTo(customer.getCenterX(), customer.getCenterY()));
+		double[] coordinates = servicePoints[servicePoint];
+
+		// Handle queuing
+		int queuePosition = queues.get(servicePoint).size();
+		coordinates[1] += queuePosition * queueSpacing;
+
+		path.getElements().add(new HLineTo(canvasWidth / 2));
+		path.getElements().add(new VLineTo(canvasHeight / 2));
+		path.getElements().add(new HLineTo(coordinates[0]));
+		path.getElements().add(new VLineTo(coordinates[1]));
+
+		customer.setCenterX(coordinates[0]);
+		customer.setCenterY(coordinates[1]);
+
+		return path;
 	}
 }

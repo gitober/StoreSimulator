@@ -6,7 +6,6 @@ import java.sql.SQLException;
 
 /**
  * This class manages the connection to the MariaDB database.
- * It provides methods to get the connection and to terminate the connection.
  */
 public class MariaDbConnection {
 
@@ -30,8 +29,7 @@ public class MariaDbConnection {
         if (conn == null) {
             // connect if necessary
             try {
-                conn = DriverManager.getConnection(
-                        "jdbc:mariadb://localhost:3306/market?user=appuser9&password=password");
+                conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/market?user=appuser9&password=password");
             } catch (SQLException e) {
                 System.out.println("Connection failed.");
                 e.printStackTrace();
