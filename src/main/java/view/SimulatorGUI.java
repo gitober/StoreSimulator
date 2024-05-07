@@ -42,7 +42,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 	public void init() {
 		Trace.setTraceLevel(Level.INFO);
 		display = new Visualisation(800, 600);
-		controller = new Controller(this);
+		controller = new Controller(this, "Store Simulation");  // Add a name as the second argument
 	}
 
 	@Override

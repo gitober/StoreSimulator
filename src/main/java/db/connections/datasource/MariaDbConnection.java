@@ -29,7 +29,7 @@ public class MariaDbConnection {
         if (conn == null) {
             // connect if necessary
             try {
-                conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/market?user=appuser9&password=password");
+                conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/market?user=root&password=Raitaseepra");
             } catch (SQLException e) {
                 System.out.println("Connection failed.");
                 e.printStackTrace();

@@ -19,6 +19,7 @@ public class Customer {
 	private static long sum = 0;
 	private static DecimalFormat df = new DecimalFormat("0.00");
 	private StringBuilder summary = new StringBuilder();
+	private String firstName, lastName;
 
 	public Customer() {
 		id = nextId++;
@@ -34,6 +35,17 @@ public class Customer {
 		Trace.out(Trace.Level.INFO, "Customer #" + id + " has arrived at the store at " + formatTime(arrivalTime));
 	}
 
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getCurrentServicePoint() {
+		return servicePoints.isEmpty() ? -1 : servicePoints.get(0);
+	}
 
 	public String getQueueStatus(int queueLength) {
 		if (queueLength == 0) {

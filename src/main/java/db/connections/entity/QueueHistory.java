@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
  * This class represents the queue history of a customer in the company.
  */
 public class QueueHistory {
-
     private int id;
     private int customerId;
     private String servicePointName;
@@ -14,14 +13,16 @@ public class QueueHistory {
     private LocalDateTime departureTime;
     private double queueTime;
 
-    public QueueHistory(int id, int customerId, String servicePointName, LocalDateTime arrivalTime,
-                        LocalDateTime departureTime, double queueTime) {
+    public QueueHistory(int id, int customerId, String servicePointName, LocalDateTime arrivalTime, LocalDateTime departureTime, double queueTime) {
         this.id = id;
         this.customerId = customerId;
         this.servicePointName = servicePointName;
         this.arrivalTime = arrivalTime;
         this.departureTime = departureTime;
         this.queueTime = queueTime;
+    }
+
+    public QueueHistory(int customerId, int eventType, int queueLength, LocalDateTime timestamp, LocalDateTime timestamp1, double delay) {
     }
 
     // Getters and setters

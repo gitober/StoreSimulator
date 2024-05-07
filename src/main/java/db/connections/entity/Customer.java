@@ -4,25 +4,26 @@ package db.connections.entity;
  * This class represents a customer in the company.
  */
 public class Customer {
-
     private int id;
     private String firstName, lastName, email, loyalCardNumber;
+    private int servicePointId;
 
-    // Updated constructor without the 'id' parameter
+    // Constructor with 'id' and 'servicePointId' parameters
     public Customer(String firstName, String lastName, String email, String loyalCardNumber) {
+        this.id = 0;  // Default ID value
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.loyalCardNumber = loyalCardNumber;
+        this.servicePointId = -1;  // Default service point ID
     }
 
-    // Getters and setters (unchanged)
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public int getServicePointId() {
+        return servicePointId;
     }
 
     public String getFirstName() {

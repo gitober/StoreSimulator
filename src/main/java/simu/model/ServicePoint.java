@@ -1,9 +1,12 @@
 package simu.model;
 
+import db.connections.dao.QueueHistoryDao;
+import db.connections.entity.QueueHistory;
 import eduni.distributions.ContinuousGenerator;
 import simu.framework.Event;
 import simu.framework.EventList;
 
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -14,30 +17,34 @@ public class ServicePoint {
 	private EventType eventType;
 	private Queue<Customer> queue;
 	private boolean reserved;
-	private int queueLength; // Variable to track queue length
+	private int queueLength;
+	private QueueHistoryDao queueStatusDao;
 
-	public ServicePoint(ContinuousGenerator generator, EventList eventList, EventType eventType) {
+	public ServicePoint(ContinuousGenerator generator, EventList eventList, EventType eventType, String tableName) {
 		this.generator = generator;
 		this.eventList = eventList;
 		this.eventType = eventType;
 		this.queue = new LinkedList<>();
-		this.queueLength = 0; // Initialize queue length to 0
+		this.queueLength = 0;
+		this.queueStatusDao = new QueueHistoryDao(tableName);
 	}
 
 	public void addQueue(Customer customer) {
 		queue.add(customer);
-		queueLength++; // Increment queue length when customer joins the queue
+		queueLength++;
 		if (!reserved) {
 			beginService();
 		}
+		logQueueStatus(customer);
 	}
 
 	public Customer removeQueue() {
 		reserved = false;
 		Customer customer = queue.poll();
 		if (customer != null) {
-			queueLength--; // Decrement queue length when customer leaves the queue
+			queueLength--;
 		}
+		logQueueStatus(customer);
 		return customer;
 	}
 
@@ -46,9 +53,8 @@ public class ServicePoint {
 			reserved = true;
 			double delay = generator.sample();
 			eventList.add(new Event(eventType, delay));
-			// Log queue status when service begins
-			System.out.println(getQueueStatus());
 		}
+		logQueueStatus(queue.peek());
 	}
 
 	public boolean isOnQueue() {
@@ -63,11 +69,15 @@ public class ServicePoint {
 		return queueLength;
 	}
 
-	public String getQueueStatus() {
-		if (getQueueLength() > 0) {
-			return "There are " + getQueueLength() + " customers in the queue.";
-		} else {
-			return "There are no customers in the queue.";
+	private void logQueueStatus(Customer customer) {
+		if (customer != null) {
+			LocalDateTime timestamp = LocalDateTime.now();
+			int customerId = customer.getId();
+			String servicePointName = "Service Point " + customer.getCurrentServicePoint();
+			double delay = generator.sample(); // Assuming delay is the waiting time
+
+			QueueHistory queueStatus = new QueueHistory(0, customerId, servicePointName, timestamp, timestamp, delay);
+			queueStatusDao.persist(queueStatus);
 		}
 	}
 }

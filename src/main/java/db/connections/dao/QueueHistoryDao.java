@@ -25,7 +25,7 @@ public class QueueHistoryDao {
      */
     public List<QueueHistory> getAllQueueHistories() {
         Connection conn = MariaDbConnection.getConnection();
-        String sql = String.format("SELECT id, customer_id, service_point_name, arrival_time, departure_time, queue_time FROM %s", tableName);
+        String sql = String.format("SELECT id, customer_id, service_point_name, arrival_time, departure_time, queue_time FROM `%s`", tableName);
         List<QueueHistory> histories = new ArrayList<>();
 
         try {
@@ -56,7 +56,7 @@ public class QueueHistoryDao {
      */
     public List<QueueHistory> getQueueHistoryForCustomer(int customerId) {
         Connection conn = MariaDbConnection.getConnection();
-        String sql = String.format("SELECT id, customer_id, service_point_name, arrival_time, departure_time, queue_time FROM %s WHERE customer_id=?", tableName);
+        String sql = String.format("SELECT id, customer_id, service_point_name, arrival_time, departure_time, queue_time FROM `%s` WHERE customer_id=?", tableName);
         List<QueueHistory> histories = new ArrayList<>();
 
         try {
@@ -86,7 +86,7 @@ public class QueueHistoryDao {
      */
     public void persist(QueueHistory history) {
         Connection conn = MariaDbConnection.getConnection();
-        String sql = String.format("INSERT INTO %s (customer_id, service_point_name, arrival_time, departure_time, queue_time) VALUES (?, ?, ?, ?, ?)", tableName);
+        String sql = String.format("INSERT INTO `%s` (customer_id, service_point_name, arrival_time, departure_time, queue_time) VALUES (?, ?, ?, ?, ?)", tableName);
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, history.getCustomerId());

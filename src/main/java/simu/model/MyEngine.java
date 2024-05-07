@@ -21,14 +21,15 @@ public class MyEngine extends Engine {
 		this.maxCustomers = maxCustomers;
 
 		servicePoints = new ServicePoint[4];
-		servicePoints[0] = new ServicePoint(new Normal(5, 2), eventList, EventType.SERVICE_DESK);
-		servicePoints[1] = new ServicePoint(new Normal(8, 3), eventList, EventType.DELI_COUNTER);
-		servicePoints[2] = new ServicePoint(new Normal(3, 1), eventList, EventType.VEGETABLE_SECTION);
-		servicePoints[3] = new ServicePoint(new Normal(4, 2), eventList, EventType.CASHIER);
+		servicePoints[0] = new ServicePoint(new Normal(5, 2), eventList, EventType.SERVICE_DESK, "Service Desk");
+		servicePoints[1] = new ServicePoint(new Normal(8, 3), eventList, EventType.DELI_COUNTER, "Deli Counter");
+		servicePoints[2] = new ServicePoint(new Normal(3, 1), eventList, EventType.VEGETABLE_SECTION, "Vegetable Section");
+		servicePoints[3] = new ServicePoint(new Normal(4, 2), eventList, EventType.CASHIER, "Cashier");
 		arrivalProcess = new ArrivalProcess(new Negexp(10, 5), eventList, EventType.ARRIVAL, maxCustomers);
 
 		events = new ArrayList<>();
 	}
+
 
 	public List<Event> getEventList() {
 		return this.events;
