@@ -81,4 +81,8 @@ public class ServicePoint {
 			queueStatusDao.persist(queueStatus);
 		}
 	}
+
+	public String getName() {
+		return this.name;
+	}
 }

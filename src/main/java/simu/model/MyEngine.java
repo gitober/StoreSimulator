@@ -1,6 +1,7 @@
 package simu.model;
 
 import simu.framework.ArrivalTimeGenerator;
+import db.connections.datasource.MariaDbConnection;
 
 import controller.IControllerMtoV;
 import eduni.distributions.Negexp;
@@ -8,10 +9,15 @@ import eduni.distributions.Normal;
 import eduni.distributions.Distributions;
 import simu.framework.*;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MyEngine extends Engine {
+	private Connection connection;
 	private ArrivalProcess arrivalProcess;
 	private ServicePoint[] servicePoints;
 	private int maxCustomers;
@@ -21,6 +27,7 @@ public class MyEngine extends Engine {
 	public MyEngine(IControllerMtoV controller, int maxCustomers) {
 		super(controller);
 		this.maxCustomers = maxCustomers;
+		this.connection = MariaDbConnection.getConnection();
 
 		servicePoints = new ServicePoint[4];
 		servicePoints[0] = new ServicePoint(new Normal(5, 2), eventList, EventType.SERVICE_DESK, "Service Desk");
@@ -63,8 +70,9 @@ public class MyEngine extends Engine {
 		Customer customer;
 		int currentServicePoint;
 		double queueTime;
-		double serviceTime;
-		int nextServicePoint;
+		double serviceTime = 0.0;
+		int nextServicePoint = -1; // Initialize nextServicePoint to a default value
+		Connection connection = MariaDbConnection.getConnection();
 
 		switch ((EventType) event.getType()) {
 			case ARRIVAL:
@@ -79,6 +87,7 @@ public class MyEngine extends Engine {
 						servicePoints[nextServicePoint - 1].addQueue(customer);
 						arrivalProcess.generateNext();
 						controller.visualiseCustomer(nextServicePoint);
+						recordServicePoint(customer.getId(), servicePoints[nextServicePoint - 1].getName(), customer.getArrivalTime(), serviceTime, queueTime, connection);
 					}
 				}
 				break;
@@ -105,6 +114,9 @@ public class MyEngine extends Engine {
 						customer.queueing(nextServicePoint, servicePoints[nextServicePoint - 1].getQueueLength());
 						servicePoints[nextServicePoint - 1].addQueue(customer);
 						controller.visualiseCustomer(nextServicePoint);
+						recordServicePoint(customer.getId(), servicePoints[nextServicePoint - 1].getName(), customer.getArrivalTime(), serviceTime, queueTime, connection);
+
+
 					} else {
 						customer.setRemovalTime(serviceTime);
 						customer.recordSummary(); // Record the summary instead of printing
@@ -119,6 +131,25 @@ public class MyEngine extends Engine {
 			}
 		}
 	}
+
+
+
+	private void recordServicePoint(int customerId, String servicePointName, double arrivalTime, double departureTime, double queueTime, Connection connection) {
+		// Insert the service point name, customer ID, arrival time, departure time, and queue time into the customer_queue_history table
+		try {
+			PreparedStatement statement = connection.prepareStatement("INSERT INTO customer_queue_history (customer_id, service_point_name, arrival_time, departure_time, queue_time) VALUES (?, ?, ?, ?, ?)");
+			statement.setInt(1, customerId);
+			statement.setString(2, servicePointName);
+			statement.setTimestamp(3, new Timestamp((long) arrivalTime)); // Assuming arrivalTime is in milliseconds
+			statement.setTimestamp(4, new Timestamp((long) departureTime)); // Assuming departureTime is in milliseconds
+			statement.setDouble(5, queueTime);
+			statement.executeUpdate();
+		} catch (SQLException e) {
+			// Handle any SQL exceptions
+			e.printStackTrace();
+		}
+	}
+
 
 	@Override
 	protected void results() {

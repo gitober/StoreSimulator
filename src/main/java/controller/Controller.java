@@ -161,15 +161,4 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 		return "Service Point " + servicePoint;
 	}
 
-	private void recordServicePoint(String servicePointName, Connection connection) {
-		// Insert the service point name into the service_points table
-		try {
-			PreparedStatement statement = connection.prepareStatement("INSERT INTO service_points (service_point_name) VALUES (?)");
-			statement.setString(1, servicePointName);
-			statement.executeUpdate();
-		} catch (SQLException e) {
-			// Handle any SQL exceptions
-			e.printStackTrace();
-		}
-	}
 }
