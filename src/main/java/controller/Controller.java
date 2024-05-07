@@ -1,13 +1,19 @@
+/**
+ * The Controller class manages the interaction between the user interface and the simulation engine.
+ */
 package controller;
 
-import db.connections.dao.QueueHistoryDao;
-import db.connections.entity.QueueHistory;
 import javafx.application.Platform;
 import simu.model.ArrivalPattern;
 import simu.model.MyEngine;
 import view.ISimulatorUI;
 import view.IVisualisation;
+import db.connections.dao.QueueHistoryDao;
+import db.connections.entity.QueueHistory;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class Controller implements IControllerVtoM, IControllerMtoV {
@@ -27,7 +33,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 	public Controller(ISimulatorUI ui, String tableName) {
 		this.ui = ui;
 		this.visualisation = ui.getVisualisation();
-		this.queueHistoryDao = new QueueHistoryDao(tableName); // Use parameterized constructor
+		this.queueHistoryDao = new QueueHistoryDao(tableName);
 	}
 
 	/**
@@ -220,5 +226,17 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 	 */
 	private String getServicePointName(int servicePoint) {
 		return "Service Point " + servicePoint;
+	}
+
+	private void recordServicePoint(String servicePointName, Connection connection) {
+		// Insert the service point name into the service_points table
+		try {
+			PreparedStatement statement = connection.prepareStatement("INSERT INTO service_points (service_point_name) VALUES (?)");
+			statement.setString(1, servicePointName);
+			statement.executeUpdate();
+		} catch (SQLException e) {
+			// Handle any SQL exceptions
+			e.printStackTrace();
+		}
 	}
 }

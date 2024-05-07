@@ -85,27 +85,23 @@ public class Visualisation extends IVisualisation {
 
 	@Override
 	public void visualiseCustomer(int servicePoint) {
-		Platform.runLater(() -> {
-			newCustomer(servicePoint);
-		});
+		newCustomer(servicePoint);
 	}
 
 	@Override
 	public void newCustomer(int servicePoint) {
 		Circle customer = new Circle(10, Color.BLUE);
-		customer.setCenterX(canvasWidth / 2);
-		customer.setCenterY(0);
-		pane.getChildren().add(customer);
-		List<Integer> servicePointsOrder = generateRandomOrder();
-		servicePointsOrder.add(CASHIER); // Last stop is always the cashier
-		servicePointsOrder.add(EXIT); // Then exit
-		customer.setUserData(servicePointsOrder);
-		queues.get(servicePoint).add(customer);
-
-		// Serve the customer if not already serving
-		if (!serving[servicePoint]) {
+		Platform.runLater(() -> {
+			customer.setCenterX(canvasWidth / 2);
+			customer.setCenterY(0);
+			pane.getChildren().add(customer);
+			List<Integer> servicePointsOrder = generateRandomOrder();
+			servicePointsOrder.add(CASHIER); // Last stop is always the cashier
+			servicePointsOrder.add(EXIT); // Then exit
+			customer.setUserData(servicePointsOrder);
+			queues.get(servicePoint).add(customer);
 			serveCustomer(servicePoint);
-		}
+		});
 	}
 
 	private List<Integer> generateRandomOrder() {
@@ -153,8 +149,8 @@ public class Visualisation extends IVisualisation {
 		path.getElements().add(new MoveTo(customer.getCenterX(), customer.getCenterY()));
 		double[] coordinates = Arrays.copyOf(servicePoints[servicePoint], 2);
 
-		// Adjust the coordinates for the queue position
-		int queuePosition = queues.get(servicePoint).size(); // Corrected
+		// Handle queuing
+		int queuePosition = queues.get(servicePoint).size();
 		coordinates[0] += queuePosition * queueHorizontalOffset;
 		coordinates[1] += queuePosition * queueSpacing;
 

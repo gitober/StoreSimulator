@@ -2,6 +2,7 @@ package simu.model;
 
 import simu.framework.Clock;
 import simu.framework.Trace;
+
 import java.text.DecimalFormat;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -18,11 +19,13 @@ public class Customer {
 	private static long sum = 0;
 	private static DecimalFormat df = new DecimalFormat("0.00");
 	private StringBuilder summary = new StringBuilder();
+	private String firstName, lastName;
 
 	public Customer() {
 		id = nextId++;
 		arrivalTime = Clock.getInstance().getTime();
 
+		// Generate a list of service points in random order except for the last point
 		List<Integer> points = Arrays.asList(1, 2, 3);
 		Collections.shuffle(points);
 		servicePoints = new ArrayList<>(points);
@@ -36,33 +39,71 @@ public class Customer {
 		return id;
 	}
 
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getCurrentServicePoint() {
+		return servicePoints.isEmpty() ? -1 : servicePoints.get(0);
+	}
+
+	public String getQueueStatus(int queueLength) {
+		if (queueLength == 0) {
+			return "Customer #" + id + " has no queue";
+		} else {
+			return "Customer #" + id + " is in queue";
+		}
+	}
+
 	public int getNextServicePoint() {
 		return servicePoints.isEmpty() ? -1 : servicePoints.remove(0);
 	}
 
-	public void setArrivalTime(double time) {
-		this.arrivalTime = time;
-	}
-
-	public double getArrivalTime() {
-		return arrivalTime;
+	public double getServiceTime(int servicePoint) {
+		return serviceTimes.getOrDefault(servicePoint, 0.0);
 	}
 
 	public void addServiceTime(int servicePoint, double timeSpent) {
 		serviceTimes.put(servicePoint, timeSpent);
 	}
 
-	public void setRemovalTime(double time) {
-		this.removalTime = time;
+	public double getRemovalTime() {
+		return removalTime;
 	}
 
-	public String getSummary() {
-		return summary.toString();
+	public void setRemovalTime(double removalTime) {
+		this.removalTime = removalTime;
+	}
+
+	public double getArrivalTime() {
+		return arrivalTime;
+	}
+
+	private String getServicePointName(int servicePoint) {
+		switch (servicePoint) {
+			case 1:
+				return "Customer Service Desk";
+			case 2:
+				return "Deli Counter";
+			case 3:
+				return "Vegetable Section";
+			case 4:
+				return "Cashier";
+			default:
+				return "Unknown Service Point";
+		}
+	}
+
+	private String formatTime(double timeInMinutes) {
+		LocalTime currentTime = LocalTime.now(ZoneId.systemDefault());
+		LocalTime updatedTime = currentTime.plusMinutes((long) timeInMinutes);
+		return updatedTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
 	}
 
 	public void queueing(int servicePoint, int queueLength) {
-		String queueStatus = getQueueStatus(queueLength);
 		Trace.out(Trace.Level.INFO, "Customer #" + id + " has arrived at " + getServicePointName(servicePoint));
+		// Call getQueueStatus method here to determine the queue status
+		String queueStatus = getQueueStatus(queueLength);
 		Trace.out(Trace.Level.INFO, queueStatus);
 	}
 
@@ -99,35 +140,14 @@ public class Customer {
 		double averageQueueTime = sum / (double) nextId;
 		summary.append("The average time customers have spent in the queues so far is: ")
 				.append(df.format(averageQueueTime)).append(" minutes\n");
-
-		Trace.out(Trace.Level.INFO, summary.toString());
 	}
 
-	private String formatTime(double timeInMinutes) {
-		LocalTime updatedTime = LocalTime.ofSecondOfDay((long) (timeInMinutes * 60));
-		return updatedTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+
+	public String getSummary() {
+		return summary.toString();
 	}
 
-	private String getQueueStatus(int queueLength) {
-		if (queueLength == 0) {
-			return "Customer #" + id + " has no queue";
-		} else {
-			return "Customer #" + id + " is in queue";
-		}
-	}
-
-	private String getServicePointName(int servicePoint) {
-		switch (servicePoint) {
-			case 1:
-				return "Customer Service Desk";
-			case 2:
-				return "Deli Counter";
-			case 3:
-				return "Vegetable Section";
-			case 4:
-				return "Cashier";
-			default:
-				return "Unknown Service Point";
-		}
+	public void setArrivalTime(double arrivalTime) {
+		this.arrivalTime = arrivalTime;
 	}
 }

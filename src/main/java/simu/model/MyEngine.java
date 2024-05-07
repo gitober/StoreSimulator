@@ -29,9 +29,30 @@ public class MyEngine extends Engine {
 		events = new ArrayList<>();
 	}
 
+	public List<Event> getEventList() {
+		return this.events;
+	}
+
+	public List<Customer> getCustomers() {
+		return this.customers;
+	}
+
+	public ServicePoint[] getServicePoints() {
+		return this.servicePoints;
+	}
+
+	public ArrivalProcess getArrivalProcess() {
+		return this.arrivalProcess;
+	}
+
 	@Override
 	public void initialization() {
-		arrivalProcess.generateNext();
+		for (int i = 1; i <= maxCustomers; i++) {
+			double arrivalTime = Clock.getInstance().getTime() + new Normal(3, 1).sample();
+			Event arrivalEvent = new Event(EventType.ARRIVAL, arrivalTime);
+			eventList.add(arrivalEvent);
+			events.add(arrivalEvent);
+		}
 	}
 
 	@Override
@@ -46,14 +67,16 @@ public class MyEngine extends Engine {
 			case ARRIVAL:
 				if (customers.size() < maxCustomers) {
 					customer = new Customer();
-					customers.add(customer);
+					customers.add(customer); // Keep track of all customers
 					nextServicePoint = customer.getNextServicePoint();
 					if (nextServicePoint != -1) {
-						customer.setArrivalTime(Clock.getInstance().getTime());
+						queueTime = Clock.getInstance().getTime();
+						customer.setArrivalTime(queueTime);
+						customer.queueing(nextServicePoint, servicePoints[nextServicePoint - 1].getQueueLength());
 						servicePoints[nextServicePoint - 1].addQueue(customer);
-						controller.visualiseCustomer(nextServicePoint - 1);
+						arrivalProcess.generateNext();
+						controller.visualiseCustomer(nextServicePoint);
 					}
-					arrivalProcess.generateNext();
 				}
 				break;
 
@@ -62,19 +85,21 @@ public class MyEngine extends Engine {
 			case VEGETABLE_SECTION:
 			case CASHIER:
 				currentServicePoint = ((EventType) event.getType()).ordinal();
-				customer = servicePoints[currentServicePoint].removeQueue();
+				customer = servicePoints[currentServicePoint - 1].removeQueue();
 				if (customer != null) {
 					queueTime = Clock.getInstance().getTime() - customer.getArrivalTime();
+					serviceTime = Clock.getInstance().getTime();
+					queueTime = customer.queueTime(currentServicePoint, queueTime);
 					customer.addServiceTime(currentServicePoint, queueTime);
 					nextServicePoint = customer.getNextServicePoint();
 					if (nextServicePoint != -1) {
-						customer.setArrivalTime(Clock.getInstance().getTime());
+						customer.setArrivalTime(serviceTime);
 						customer.queueing(nextServicePoint, servicePoints[nextServicePoint - 1].getQueueLength());
 						servicePoints[nextServicePoint - 1].addQueue(customer);
-						controller.visualiseCustomer(nextServicePoint - 1);
+						controller.visualiseCustomer(nextServicePoint);
 					} else {
-						customer.setRemovalTime(Clock.getInstance().getTime());
-						customer.recordSummary();
+						customer.setRemovalTime(serviceTime);
+						customer.recordSummary(); // Record the summary instead of printing
 					}
 				}
 				break;
@@ -95,7 +120,6 @@ public class MyEngine extends Engine {
 		}
 	}
 
-	@Override
 	public void setArrivalPattern(ArrivalPattern pattern) {
 		String message;
 		switch (pattern) {
