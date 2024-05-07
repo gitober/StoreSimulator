@@ -35,12 +35,17 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 
 	@Override
 	public void visualiseCustomer(int servicePoint) {
-		if (visualisation != null) {
-			Platform.runLater(() -> visualisation.newCustomer(servicePoint));
-		} else {
-			System.out.println("Error: Visualisation is not initialized.");
+		final int ARRIVAL = 5;
+		if (servicePoint == ARRIVAL) {
+			if (ui != null) {
+				ui.getVisualisation().visualiseCustomer(ARRIVAL);
+			} else {
+				System.out.println("Error: UI is not initialized.");
+			}
 		}
 	}
+
+
 
 
 	@Override
@@ -111,10 +116,12 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 		if (engine != null) {
 			engine.setArrivalPattern(pattern);
 		}
-		if (ui != null) {
-			ui.setArrivalPattern(pattern);
-		}
+		// Avoid redundant call
 		System.out.println("Arrival pattern set to: " + describePattern(pattern));
+	}
+
+	public ArrivalPattern getDesiredPattern() {
+		return desiredPattern;
 	}
 
 	private String describePattern(ArrivalPattern pattern) {

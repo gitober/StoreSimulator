@@ -88,14 +88,24 @@ public class Visualisation extends IVisualisation {
 
 	@Override
 	public void visualiseCustomer(int servicePoint) {
-		newCustomer(servicePoint);
+		final int ARRIVAL = 5;
+		if (servicePoint != ARRIVAL) {
+			System.out.println("Error: Customers should start at ARRIVAL.");
+			return;
+		}
+
+		Platform.runLater(() -> newCustomer(servicePoint));
 	}
 
 	@Override
 	public void newCustomer(int servicePoint) {
+		final int ARRIVAL = 5;
+		if (servicePoint != ARRIVAL) {
+			throw new IllegalArgumentException("Customers should start at ARRIVAL.");
+		}
+
 		Circle customer = new Circle(10, Color.BLUE);
 		Platform.runLater(() -> {
-			// Set the initial position to the ARRIVAL point (top-center)
 			customer.setCenterX(servicePoints[ARRIVAL][0]);
 			customer.setCenterY(servicePoints[ARRIVAL][1]);
 			pane.getChildren().add(customer);
@@ -103,11 +113,11 @@ public class Visualisation extends IVisualisation {
 			servicePointsOrder.add(CASHIER); // Last stop is always the cashier
 			servicePointsOrder.add(EXIT); // Then exit
 			customer.setUserData(servicePointsOrder);
-			// Add the customer to the arrival queue
 			queues.get(ARRIVAL).add(customer);
 			serveCustomer(ARRIVAL, customer);
 		});
 	}
+
 
 	private List<Integer> generateRandomOrder() {
 		List<Integer> order = new ArrayList<>(Arrays.asList(SERVICE_DESK, DELI_COUNTER, VEGETABLE_SECTION));
@@ -170,4 +180,5 @@ public class Visualisation extends IVisualisation {
 
 		return path;
 	}
+
 }

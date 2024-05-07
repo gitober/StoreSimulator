@@ -34,4 +34,5 @@ public interface IControllerVtoM {
 	 * @param delay The delay to set for the simulation.
 	 */
 	void setSimulationSpeed(long delay);
+	ArrivalPattern getDesiredPattern();
 }

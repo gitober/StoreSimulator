@@ -86,9 +86,15 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 		// Set up the startButton
 		startButton = new Button("Start simulation");
 		startButton.setOnAction(event -> {
+			int numberOfCustomers = getCustomerAmount();
+			for (int i = 0; i < numberOfCustomers; i++) {
+				display.visualiseCustomer(5); // Start new customers at ARRIVAL
+			}
 			controller.startSimulation();
 			startButton.setDisable(true);
 		});
+
+
 
 		// Set up other buttons
 		Button slowButton = new Button("Slow down");
@@ -247,6 +253,15 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 	public void setArrivalPattern(ArrivalPattern pattern) {
 		controller.setArrivalPattern(pattern);
 	}
+
+	public void startSimulation() {
+		int numberOfCustomers = getCustomerAmount();
+		for (int i = 0; i < numberOfCustomers; i++) {
+			display.visualiseCustomer(5); // Start new customers at ARRIVAL
+		}
+		controller.startSimulation();
+	}
+
 
 	public TextArea getResultsTextArea() {
 		return resultsTextArea;
