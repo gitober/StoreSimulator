@@ -1,6 +1,5 @@
 package view;
 
-import controller.Controller;
 import javafx.animation.PathTransition;
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
@@ -19,22 +18,16 @@ import java.util.*;
 
 public class Visualisation extends IVisualisation {
 
-	private Canvas canvas;
-	private GraphicsContext gc;
+	private final Canvas canvas;
+	private final GraphicsContext gc;
 	private final int canvasWidth;
 	private final int canvasHeight;
-	private Pane pane;
-	private double[][] servicePoints;
-	private List<Queue<Circle>> queues;
-	private boolean[] serving;
-	private Image backgroundImage;
+	private final Pane pane;
+	private final double[][] servicePoints;
+	private final List<Queue<Circle>> queues;
+	private final boolean[] serving;
+	private final Image backgroundImage;
 	private final double queueSpacing = 15.0;
-	private final double queueHorizontalOffset = 20.0;
-	private boolean simulationStarted = false;
-	private int createdCustomers = 0;
-	private Controller controller;
-	private ISimulatorUI ui;
-
 
 	// Define the service points
 	private static final int SERVICE_DESK = 0;
@@ -43,16 +36,14 @@ public class Visualisation extends IVisualisation {
 	private static final int CASHIER = 3;
 	private static final int EXIT = 4;
 
-	public Visualisation(int w, int h, Controller controller, ISimulatorUI ui) {
+	public Visualisation(int w, int h) {
 		super(w, h);
-		this.controller = controller;
-		this.ui = ui;
 		canvas = new Canvas(w, h);
 		gc = canvas.getGraphicsContext2D();
 		canvasWidth = w;
 		canvasHeight = h;
 		pane = new Pane(canvas);
-		servicePoints = new double[][]{
+		servicePoints = new double[][] {
 				{50, 50}, // Top-left corner (Service Desk)
 				{canvasWidth - 50, 50}, // Top-right corner (Deli Counter)
 				{50, canvasHeight - 50}, // Bottom-left corner (Vegetable Section)
@@ -83,6 +74,7 @@ public class Visualisation extends IVisualisation {
 
 	@Override
 	public void clearDisplay() {
+		gc.clearRect(0, 0, canvasWidth, canvasHeight);
 		if (backgroundImage != null) {
 			gc.drawImage(backgroundImage, 0, 0, canvasWidth, canvasHeight);
 		} else {
@@ -98,35 +90,19 @@ public class Visualisation extends IVisualisation {
 
 	@Override
 	public void newCustomer(int servicePoint) {
-		// Only create a new customer if the simulation has just started and the number of created customers is less than the user's input
-		if (!simulationStarted && createdCustomers < ui.getCustomerAmount()) {
-			// Check if a customer is already being served at the service point
-			if (serving[servicePoint]) {
-				return; // If so, do not add a new customer
-			}
-			Circle customer = new Circle(10, Color.DARKVIOLET);
-			Platform.runLater(() -> {
-				customer.setCenterX(canvasWidth / 2);
-				customer.setCenterY(0);
-				pane.getChildren().add(customer);
-				List<Integer> servicePointsOrder = generateRandomOrder();
-				servicePointsOrder.add(CASHIER); // Last stop is always the cashier
-				servicePointsOrder.add(EXIT); // Then exit
-				customer.setUserData(servicePointsOrder);
-				if (queues.get(servicePoint).isEmpty()) { // Only add to queue if it's empty
-					queues.get(servicePoint).add(customer);
-				}
-				if (!serving[servicePoint]) { // Only start serving if not already serving
-					serveCustomer(servicePoint);
-				}
-			});
-			createdCustomers++;
-			if (createdCustomers >= ui.getCustomerAmount()) {
-				simulationStarted = true;
-			}
-		}
+		Circle customer = new Circle(10, Color.BLUE);
+		Platform.runLater(() -> {
+			customer.setCenterX(canvasWidth / 2);
+			customer.setCenterY(0);
+			pane.getChildren().add(customer);
+			List<Integer> servicePointsOrder = generateRandomOrder();
+			servicePointsOrder.add(CASHIER); // Last stop is always the cashier
+			servicePointsOrder.add(EXIT); // Then exit
+			customer.setUserData(servicePointsOrder);
+			queues.get(servicePoint).add(customer);
+			serveCustomer(servicePoint, customer);
+		});
 	}
-
 
 	private List<Integer> generateRandomOrder() {
 		List<Integer> order = new ArrayList<>(Arrays.asList(SERVICE_DESK, DELI_COUNTER, VEGETABLE_SECTION));
@@ -134,22 +110,25 @@ public class Visualisation extends IVisualisation {
 		return order;
 	}
 
-	private void serveCustomer(int servicePoint) {
+	private void serveCustomer(int servicePoint, Circle customer) {
 		Queue<Circle> queue = queues.get(servicePoint);
-		if (!queue.isEmpty()) {
-			serving[servicePoint] = true;
-			Circle nextCustomer = queue.poll();
-			moveToNextServicePoint(nextCustomer, servicePoint);
-		} else {
-			serving[servicePoint] = false; // No customers to serve
-		}
+
+		// Animate the customer in the queue
+		Platform.runLater(() -> {
+			if (queue.contains(customer) && !serving[servicePoint]) {
+				serving[servicePoint] = true;
+				Circle nextCustomer = queue.poll();
+				if (nextCustomer != null) {
+					moveToNextServicePoint(nextCustomer, servicePoint);
+				}
+				serving[servicePoint] = false;
+			}
+		});
 	}
 
 	private void moveToNextServicePoint(Circle customer, int currentServicePoint) {
 		List<Integer> servicePointsOrder = (List<Integer>) customer.getUserData();
-		if (servicePointsOrder.isEmpty()) {
-			return;
-		}
+		if (servicePointsOrder.isEmpty()) return;
 		int nextServicePoint = servicePointsOrder.remove(0);
 		Path path = createPathToServicePoint(customer, nextServicePoint);
 		PathTransition transition = new PathTransition();
@@ -162,32 +141,21 @@ public class Visualisation extends IVisualisation {
 				pane.getChildren().remove(customer);
 			} else {
 				queues.get(nextServicePoint).add(customer);
-				serveCustomer(nextServicePoint);
+				serveCustomer(nextServicePoint, customer);
 			}
-			serving[currentServicePoint] = false;
-			serveCustomer(currentServicePoint);
 		});
 		transition.play();
 	}
 
-
 	private Path createPathToServicePoint(Circle customer, int servicePoint) {
 		Path path = new Path();
 		path.getElements().add(new MoveTo(customer.getCenterX(), customer.getCenterY()));
-		double[] coordinates = Arrays.copyOf(servicePoints[servicePoint], 2);
+		double[] coordinates = servicePoints[servicePoint];
 
 		// Handle queuing
 		int queuePosition = queues.get(servicePoint).size();
-		coordinates[0] += queuePosition * queueHorizontalOffset;
 		coordinates[1] += queuePosition * queueSpacing;
 
-		// Limit the bounds
-		coordinates[0] = Math.max(0, Math.min(canvasWidth - customer.getRadius(), coordinates[0]));
-		coordinates[1] = Math.max(0, Math.min(canvasHeight - customer.getRadius(), coordinates[1]));
-
-		// Add some spacing to prevent customers from overlapping
-		coordinates[0] += queuePosition * 20; // Adjust this value as needed
-		coordinates[1] += queuePosition * 20; // Adjust this value as needed
 		path.getElements().add(new HLineTo(coordinates[0]));
 		path.getElements().add(new VLineTo(coordinates[1]));
 

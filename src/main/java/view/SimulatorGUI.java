@@ -1,7 +1,5 @@
-package view;// package view;
+package view;
 
-import controller.Controller;
-import controller.IControllerVtoM;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -18,6 +16,10 @@ import javafx.stage.Stage;
 import simu.framework.Trace;
 import simu.framework.Trace.Level;
 import simu.model.ArrivalPattern;
+import view.IVisualisation;
+import view.Visualisation;
+import controller.Controller;
+import controller.IControllerVtoM;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -36,18 +38,19 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 	private ComboBox<String> delayDropdown;
 	private Button startButton;
 
-
 	private static final double[] exampleTimes = {30.0, 60.0, 120.0}; // Predefined example times
 
 	@Override
 	public void init() {
 		Trace.setTraceLevel(Level.INFO);
-		controller = new Controller(this, "Store Simulation");  // Add a name as the second argument
-		display = new Visualisation(800, 600, (Controller) controller, this);
 	}
 
 	@Override
 	public void start(Stage primaryStage) {
+		// Initialize display
+		display = new Visualisation(500, 500);
+		controller = new Controller(this, "Store Simulation");
+
 		primaryStage.setOnCloseRequest(t -> {
 			Platform.exit();
 			System.exit(0);
@@ -122,6 +125,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 		delayDropdown = new ComboBox<>();
 		delayDropdown.getItems().addAll("SLOW", "NORMAL", "FAST");
 		delayDropdown.setValue("NORMAL");
+		delayDropdown.setOnAction(e -> setDelay(getDelay()));
 
 		List<Double> exampleTimesList = new ArrayList<>();
 		for (double time : exampleTimes) {
@@ -164,11 +168,12 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 		scrollPane.setFitToHeight(true);
 		scrollPane.setPadding(new Insets(10));
 
-		// Set up for the layout
+		// Initialize display correctly
 		VBox leftVBox = new VBox(10);
 		leftVBox.setPadding(new Insets(15));
 		leftVBox.getChildren().addAll(grid, (Visualisation) display);
 
+		// Set up for the layout
 		BorderPane borderPane = new BorderPane();
 		borderPane.setLeft(leftVBox);
 		borderPane.setCenter(scrollPane);
@@ -240,6 +245,7 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 
 	@Override
 	public void setArrivalPattern(ArrivalPattern pattern) {
+		controller.setArrivalPattern(pattern);
 	}
 
 	public TextArea getResultsTextArea() {

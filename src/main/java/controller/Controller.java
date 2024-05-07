@@ -30,7 +30,6 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 		this.h = h;
 		this.visualisation = ui.getVisualisation();
 		this.queueHistoryDao = new QueueHistoryDao(tableName);
-		this.visualisation = new Visualisation(w, h, this, ui);
 	}
 
 
