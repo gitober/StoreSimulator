@@ -1,8 +1,11 @@
 package simu.model;
 
+import simu.framework.ArrivalTimeGenerator;
+
 import controller.IControllerMtoV;
 import eduni.distributions.Negexp;
 import eduni.distributions.Normal;
+import eduni.distributions.Distributions;
 import simu.framework.*;
 
 import java.util.ArrayList;
@@ -48,7 +51,7 @@ public class MyEngine extends Engine {
 	@Override
 	public void initialization() {
 		for (int i = 1; i <= maxCustomers; i++) {
-			double arrivalTime = Clock.getInstance().getTime() + new Normal(3, 1).sample();
+			double arrivalTime = Clock.getInstance().getTime() + new ArrivalTimeGenerator(new Distributions()).generateArrivalTime(i);
 			Event arrivalEvent = new Event(EventType.ARRIVAL, arrivalTime);
 			eventList.add(arrivalEvent);
 			events.add(arrivalEvent);
@@ -87,7 +90,12 @@ public class MyEngine extends Engine {
 				currentServicePoint = ((EventType) event.getType()).ordinal();
 				customer = servicePoints[currentServicePoint - 1].removeQueue();
 				if (customer != null) {
-					queueTime = Clock.getInstance().getTime() - customer.getArrivalTime();
+					// Only calculate the queue time if there's more than one customer in the store
+					if (customers.size() > 1) {
+						queueTime = Clock.getInstance().getTime() - customer.getArrivalTime();
+					} else {
+						queueTime = 0;
+					}
 					serviceTime = Clock.getInstance().getTime();
 					queueTime = customer.queueTime(currentServicePoint, queueTime);
 					customer.addServiceTime(currentServicePoint, queueTime);

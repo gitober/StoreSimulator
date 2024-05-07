@@ -1,5 +1,6 @@
 package view;
 
+import controller.Controller;
 import javafx.animation.PathTransition;
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
@@ -29,6 +30,11 @@ public class Visualisation extends IVisualisation {
 	private Image backgroundImage;
 	private final double queueSpacing = 15.0;
 	private final double queueHorizontalOffset = 20.0;
+	private boolean simulationStarted = false;
+	private int createdCustomers = 0;
+	private Controller controller;
+	private ISimulatorUI ui;
+
 
 	// Define the service points
 	private static final int SERVICE_DESK = 0;
@@ -37,8 +43,10 @@ public class Visualisation extends IVisualisation {
 	private static final int CASHIER = 3;
 	private static final int EXIT = 4;
 
-	public Visualisation(int w, int h) {
+	public Visualisation(int w, int h, Controller controller, ISimulatorUI ui) {
 		super(w, h);
+		this.controller = controller;
+		this.ui = ui;
 		canvas = new Canvas(w, h);
 		gc = canvas.getGraphicsContext2D();
 		canvasWidth = w;
@@ -90,19 +98,35 @@ public class Visualisation extends IVisualisation {
 
 	@Override
 	public void newCustomer(int servicePoint) {
-		Circle customer = new Circle(10, Color.BLUE);
-		Platform.runLater(() -> {
-			customer.setCenterX(canvasWidth / 2);
-			customer.setCenterY(0);
-			pane.getChildren().add(customer);
-			List<Integer> servicePointsOrder = generateRandomOrder();
-			servicePointsOrder.add(CASHIER); // Last stop is always the cashier
-			servicePointsOrder.add(EXIT); // Then exit
-			customer.setUserData(servicePointsOrder);
-			queues.get(servicePoint).add(customer);
-			serveCustomer(servicePoint);
-		});
+		// Only create a new customer if the simulation has just started and the number of created customers is less than the user's input
+		if (!simulationStarted && createdCustomers < ui.getCustomerAmount()) {
+			// Check if a customer is already being served at the service point
+			if (serving[servicePoint]) {
+				return; // If so, do not add a new customer
+			}
+			Circle customer = new Circle(10, Color.DARKVIOLET);
+			Platform.runLater(() -> {
+				customer.setCenterX(canvasWidth / 2);
+				customer.setCenterY(0);
+				pane.getChildren().add(customer);
+				List<Integer> servicePointsOrder = generateRandomOrder();
+				servicePointsOrder.add(CASHIER); // Last stop is always the cashier
+				servicePointsOrder.add(EXIT); // Then exit
+				customer.setUserData(servicePointsOrder);
+				if (queues.get(servicePoint).isEmpty()) { // Only add to queue if it's empty
+					queues.get(servicePoint).add(customer);
+				}
+				if (!serving[servicePoint]) { // Only start serving if not already serving
+					serveCustomer(servicePoint);
+				}
+			});
+			createdCustomers++;
+			if (createdCustomers >= ui.getCustomerAmount()) {
+				simulationStarted = true;
+			}
+		}
 	}
+
 
 	private List<Integer> generateRandomOrder() {
 		List<Integer> order = new ArrayList<>(Arrays.asList(SERVICE_DESK, DELI_COUNTER, VEGETABLE_SECTION));
@@ -112,10 +136,12 @@ public class Visualisation extends IVisualisation {
 
 	private void serveCustomer(int servicePoint) {
 		Queue<Circle> queue = queues.get(servicePoint);
-		if (!serving[servicePoint] && !queue.isEmpty()) {
+		if (!queue.isEmpty()) {
 			serving[servicePoint] = true;
 			Circle nextCustomer = queue.poll();
 			moveToNextServicePoint(nextCustomer, servicePoint);
+		} else {
+			serving[servicePoint] = false; // No customers to serve
 		}
 	}
 
@@ -144,6 +170,7 @@ public class Visualisation extends IVisualisation {
 		transition.play();
 	}
 
+
 	private Path createPathToServicePoint(Circle customer, int servicePoint) {
 		Path path = new Path();
 		path.getElements().add(new MoveTo(customer.getCenterX(), customer.getCenterY()));
@@ -158,6 +185,9 @@ public class Visualisation extends IVisualisation {
 		coordinates[0] = Math.max(0, Math.min(canvasWidth - customer.getRadius(), coordinates[0]));
 		coordinates[1] = Math.max(0, Math.min(canvasHeight - customer.getRadius(), coordinates[1]));
 
+		// Add some spacing to prevent customers from overlapping
+		coordinates[0] += queuePosition * 20; // Adjust this value as needed
+		coordinates[1] += queuePosition * 20; // Adjust this value as needed
 		path.getElements().add(new HLineTo(coordinates[0]));
 		path.getElements().add(new VLineTo(coordinates[1]));
 

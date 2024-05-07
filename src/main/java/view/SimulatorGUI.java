@@ -36,13 +36,14 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 	private ComboBox<String> delayDropdown;
 	private Button startButton;
 
+
 	private static final double[] exampleTimes = {30.0, 60.0, 120.0}; // Predefined example times
 
 	@Override
 	public void init() {
 		Trace.setTraceLevel(Level.INFO);
-		display = new Visualisation(800, 600);
 		controller = new Controller(this, "Store Simulation");  // Add a name as the second argument
+		display = new Visualisation(800, 600, (Controller) controller, this);
 	}
 
 	@Override
