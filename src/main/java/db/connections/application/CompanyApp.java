@@ -5,7 +5,7 @@ import db.connections.entity.Customer;
 import java.util.List;
 
 /**
- * This class represents the main application for managing customers in a company.
+ * The CompanyApp class represents the main application for managing customers in a company.
  * It provides methods to retrieve all customers, retrieve a specific customer by ID,
  * add a new customer, and terminate the database connection.
  */
@@ -13,6 +13,10 @@ public class CompanyApp {
 
     /**
      * The main method for the application.
+     * This method initializes the application, retrieves customer data from the database,
+     * performs operations such as printing customer details and adding a new customer,
+     * and terminates the database connection.
+     *
      * @param args The command line arguments.
      */
     public static void main(String[] args) {

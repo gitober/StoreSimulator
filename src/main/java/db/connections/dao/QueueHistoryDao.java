@@ -1,13 +1,17 @@
 package db.connections.dao;
 
-import db.connections.entity.QueueHistory;
 import db.connections.datasource.MariaDbConnection;
+import db.connections.entity.QueueHistory;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The QueueHistoryDao class provides methods to interact with the database
+ * for CRUD operations on queue history data.
+ */
 public class QueueHistoryDao {
 
     private final String tableName;
@@ -24,6 +28,7 @@ public class QueueHistoryDao {
 
     /**
      * Retrieves all queue histories from the database.
+     *
      * @return A list of all queue histories.
      */
     public List<QueueHistory> getAllQueueHistories() {
@@ -54,6 +59,7 @@ public class QueueHistoryDao {
 
     /**
      * Retrieves the queue history for a specific customer ID from the database.
+     *
      * @param customerId The ID of the customer.
      * @return A list of queue histories for the given customer ID.
      */
@@ -85,6 +91,7 @@ public class QueueHistoryDao {
 
     /**
      * Persists a new queue history to the database.
+     *
      * @param history The queue history to be persisted.
      */
     public void persist(QueueHistory history) {

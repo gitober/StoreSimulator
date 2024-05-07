@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class represents the Data Access Object (DAO) for the Customer entity.
+ * The CustomerDao class represents the Data Access Object (DAO) for the Customer entity.
+ * It provides methods to interact with the database to perform CRUD operations on customer data.
  */
 public class CustomerDao {
 

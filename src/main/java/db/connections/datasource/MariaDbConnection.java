@@ -23,13 +23,14 @@ public class MariaDbConnection {
 
     /**
      * Returns the connection to the database. If the connection does not exist, it creates a new one.
+     *
      * @return The connection to the database.
      */
     public static Connection getConnection() {
         if (conn == null) {
             // connect if necessary
             try {
-                conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/market?user=root&password=Raitaseepra");
+                conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/market?user=appuser9&password=password");
             } catch (SQLException e) {
                 System.out.println("Connection failed.");
                 e.printStackTrace();
