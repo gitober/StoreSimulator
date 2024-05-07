@@ -28,6 +28,7 @@ public class Visualisation extends IVisualisation {
 	private final boolean[] serving;
 	private final Image backgroundImage;
 	private final double queueSpacing = 15.0;
+	private final double queueHorizontalOffset = 20.0;
 
 	// Define the service points
 	private static final int SERVICE_DESK = 0;
@@ -35,6 +36,7 @@ public class Visualisation extends IVisualisation {
 	private static final int VEGETABLE_SECTION = 2;
 	private static final int CASHIER = 3;
 	private static final int EXIT = 4;
+	private static final int ARRIVAL = 5;
 
 	public Visualisation(int w, int h) {
 		super(w, h);
@@ -43,16 +45,17 @@ public class Visualisation extends IVisualisation {
 		canvasWidth = w;
 		canvasHeight = h;
 		pane = new Pane(canvas);
-		servicePoints = new double[][] {
+		servicePoints = new double[][]{
 				{50, 50}, // Top-left corner (Service Desk)
 				{canvasWidth - 50, 50}, // Top-right corner (Deli Counter)
 				{50, canvasHeight - 50}, // Bottom-left corner (Vegetable Section)
 				{canvasWidth - 50, canvasHeight - 50}, // Bottom-right corner (Cashier)
-				{canvasWidth / 2, canvasHeight - 10} // Bottom-middle (Exit)
+				{canvasWidth / 2, canvasHeight - 10}, // Bottom-middle (Exit)
+				{canvasWidth / 2, 10} // Top-middle (Arrival)
 		};
 		queues = new ArrayList<>();
-		serving = new boolean[5];
-		for (int i = 0; i < 5; i++) {
+		serving = new boolean[6]; // Adjusted to handle the ARRIVAL point
+		for (int i = 0; i < 6; i++) {
 			queues.add(new LinkedList<>());
 			serving[i] = false;
 		}
@@ -92,15 +95,17 @@ public class Visualisation extends IVisualisation {
 	public void newCustomer(int servicePoint) {
 		Circle customer = new Circle(10, Color.BLUE);
 		Platform.runLater(() -> {
-			customer.setCenterX(canvasWidth / 2);
-			customer.setCenterY(0);
+			// Set the initial position to the ARRIVAL point (top-center)
+			customer.setCenterX(servicePoints[ARRIVAL][0]);
+			customer.setCenterY(servicePoints[ARRIVAL][1]);
 			pane.getChildren().add(customer);
 			List<Integer> servicePointsOrder = generateRandomOrder();
 			servicePointsOrder.add(CASHIER); // Last stop is always the cashier
 			servicePointsOrder.add(EXIT); // Then exit
 			customer.setUserData(servicePointsOrder);
-			queues.get(servicePoint).add(customer);
-			serveCustomer(servicePoint, customer);
+			// Add the customer to the arrival queue
+			queues.get(ARRIVAL).add(customer);
+			serveCustomer(ARRIVAL, customer);
 		});
 	}
 
@@ -154,6 +159,7 @@ public class Visualisation extends IVisualisation {
 
 		// Handle queuing
 		int queuePosition = queues.get(servicePoint).size();
+		coordinates[0] += queuePosition * queueHorizontalOffset;
 		coordinates[1] += queuePosition * queueSpacing;
 
 		path.getElements().add(new HLineTo(coordinates[0]));
