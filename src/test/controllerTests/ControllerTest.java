@@ -27,11 +27,15 @@ class ControllerTest extends ApplicationTest {
     void setUp() {
         new JFXPanel(); // initializes JavaFX environment
         mockUi = mock(ISimulatorUI.class);
-        mockVisualisation = mock(Visualisation.class); // Initialize the mockVisualisation
-        when(mockUi.getVisualisation()).thenReturn(mockVisualisation); // Add this line
-        controller = new Controller(mockUi);
+        mockVisualisation = mock(Visualisation.class);
+        when(mockUi.getVisualisation()).thenReturn(mockVisualisation);
+
+        String controllerName = "TestController";
+        controller = new Controller(mockUi, controllerName); // Pass the name as the second parameter
+
         Trace.setTraceLevel(Trace.Level.INFO);
     }
+
 
     @RetryingTest(3)
     void visualiseCustomer_WithValidServicePoint() throws InterruptedException {

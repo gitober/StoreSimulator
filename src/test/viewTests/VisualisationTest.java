@@ -1,18 +1,20 @@
 package viewTests;
 
 import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.testfx.util.WaitForAsyncUtils;
 import view.Visualisation;
 
-import javafx.embed.swing.JFXPanel;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 public class VisualisationTest {
 
@@ -20,12 +22,10 @@ public class VisualisationTest {
 
     @BeforeEach
     public void setUp() {
-        // Start JavaFX runtime
-        new JFXPanel();
+        new JFXPanel(); // initializes JavaFX environment
 
         Platform.runLater(() -> {
             visualisation = new Visualisation(500, 500);
-            visualisation.newCustomer(1);
         });
 
         // Wait for JavaFX application thread to finish
@@ -34,56 +34,69 @@ public class VisualisationTest {
 
     @Test
     public void clearDisplayShouldFillCanvasWithLightBlue() {
-        visualisation.clearDisplay();
-        Color expectedColor = Color.LIGHTBLUE;
-        Color actualColor = (Color) visualisation.getGraphicsContext2D().getFill();
-        assertEquals(expectedColor, actualColor);
-    }
+        Platform.runLater(() -> visualisation.clearDisplay());
+        WaitForAsyncUtils.waitForFxEvents();
 
-    @Test
-    public void visualiseCustomerShouldAddCircleToPane() {
-        int initialPaneChildrenSize = visualisation.getPane().getChildren().size();
-        visualisation.visualiseCustomer(1);
-        int finalPaneChildrenSize = visualisation.getPane().getChildren().size();
-        assertEquals(initialPaneChildrenSize + 1, finalPaneChildrenSize);
+        Canvas canvas = (Canvas) visualisation.getPane().getChildren().get(0);
+        assertEquals(Color.LIGHTBLUE, canvas.getGraphicsContext2D().getFill());
     }
 
     @Test
     public void newCustomerShouldThrowExceptionForInvalidServicePoint() {
-        assertThrows(IllegalArgumentException.class, () -> visualisation.newCustomer(0));
-        assertThrows(IllegalArgumentException.class, () -> visualisation.newCustomer(5));
+        assertThrows(IllegalArgumentException.class, () -> {
+            Platform.runLater(() -> visualisation.newCustomer(-1));
+            WaitForAsyncUtils.waitForFxEvents();
+        });
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            Platform.runLater(() -> visualisation.newCustomer(6));
+            WaitForAsyncUtils.waitForFxEvents();
+        });
     }
 
     @Test
-    public void clearDisplayShouldClearCanvas() {
-        visualisation.clearDisplay();
-        // Assert that the canvas is cleared (e.g., by checking the color of a pixel)
-    }
+    public void visualiseCustomerShouldAddCircleToPane() {
+        Platform.runLater(() -> visualisation.visualiseCustomer(1));
+        WaitForAsyncUtils.waitForFxEvents();
 
-    @Test
-    public void visualiseCustomerShouldCreateNewCustomer() {
-        visualisation.visualiseCustomer(1);
-        // Assert that a new customer is created (e.g., by checking the number of children in the pane)
+        long circleCount = visualisation.getPane().getChildren().stream()
+                .filter(node -> node instanceof Circle)
+                .count();
+        assertEquals(1, circleCount);
     }
 
     @Test
     public void newCustomerShouldCreateCircleWithCorrectColor() {
-        visualisation.newCustomer(1);
-        // Assert that a new circle is created with the correct color
+        Platform.runLater(() -> visualisation.newCustomer(1));
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Optional<Circle> circleOpt = visualisation.getPane().getChildren().stream()
+                .filter(node -> node instanceof Circle)
+                .map(node -> (Circle) node)
+                .findFirst();
+
+        Circle circle = circleOpt.orElseThrow(() -> new AssertionError("No Circle found"));
+        assertEquals(Color.BLUE, circle.getFill());
     }
 
     @Test
-    public void newCustomerShouldAddCircleToPane() {
-        int initialPaneChildrenSize = visualisation.getPane().getChildren().size();
-        visualisation.newCustomer(1);
-        int finalPaneChildrenSize = visualisation.getPane().getChildren().size();
-        assertEquals(initialPaneChildrenSize + 1, finalPaneChildrenSize);
+    public void clearDisplayShouldClearCanvas() {
+        Platform.runLater(() -> visualisation.clearDisplay());
+        WaitForAsyncUtils.waitForFxEvents();
+
+        Canvas canvas = (Canvas) visualisation.getPane().getChildren().get(0);
+        assertEquals(Color.LIGHTBLUE, canvas.getGraphicsContext2D().getFill());
     }
 
     @Test
     public void newCustomerShouldHandleInvalidServicePoint() {
         assertThrows(IllegalArgumentException.class, () -> {
-            visualisation.newCustomer(5); // This should throw an IllegalArgumentException
+            Platform.runLater(() -> visualisation.newCustomer(-1));
+            WaitForAsyncUtils.waitForFxEvents();
+        });
+        assertThrows(IllegalArgumentException.class, () -> {
+            Platform.runLater(() -> visualisation.newCustomer(6));
+            WaitForAsyncUtils.waitForFxEvents();
         });
     }
 }

@@ -89,20 +89,28 @@ public class Visualisation extends IVisualisation {
 	}
 
 	@Override
-	public void newCustomer(int servicePoint) {
-		Circle customer = new Circle(10, Color.BLUE);
-		Platform.runLater(() -> {
-			customer.setCenterX(canvasWidth / 2);
-			customer.setCenterY(0);
-			pane.getChildren().add(customer);
-			List<Integer> servicePointsOrder = generateRandomOrder();
-			servicePointsOrder.add(CASHIER); // Last stop is always the cashier
-			servicePointsOrder.add(EXIT); // Then exit
-			customer.setUserData(servicePointsOrder);
-			queues.get(servicePoint).add(customer);
-			serveCustomer(servicePoint);
-		});
+	public void newCustomer(int numOfCustomers) {
+		for (int i = 0; i < numOfCustomers; i++) {
+			final int index = i;
+			Platform.runLater(() -> {
+				Circle customer = new Circle(10, Color.BLUE);
+				customer.setCenterX(canvasWidth / 2);
+				customer.setCenterY(0);
+				pane.getChildren().add(customer);
+				List<Integer> servicePointsOrder = generateRandomOrder();
+				servicePointsOrder.add(CASHIER); // Last stop is always the cashier
+				servicePointsOrder.add(EXIT); // Then exit
+				customer.setUserData(servicePointsOrder);
+				int servicePoint = index % servicePoints.length;
+				queues.get(servicePoint).add(customer);
+				serveCustomer(servicePoint);
+			});
+		}
 	}
+
+
+
+
 
 	private List<Integer> generateRandomOrder() {
 		List<Integer> order = new ArrayList<>(Arrays.asList(SERVICE_DESK, DELI_COUNTER, VEGETABLE_SECTION));
@@ -136,13 +144,17 @@ public class Visualisation extends IVisualisation {
 				pane.getChildren().remove(customer);
 			} else {
 				queues.get(nextServicePoint).add(customer);
-				serveCustomer(nextServicePoint);
+				if (!serving[nextServicePoint]) { // Check if the next service point is not currently serving
+					serving[nextServicePoint] = true;
+					serveCustomer(nextServicePoint);
+				}
 			}
 			serving[currentServicePoint] = false;
-			serveCustomer(currentServicePoint);
 		});
 		transition.play();
 	}
+
+
 
 	private Path createPathToServicePoint(Circle customer, int servicePoint) {
 		Path path = new Path();
