@@ -1,7 +1,6 @@
 package simu.model;
 
 import controller.IControllerMtoV;
-import eduni.distributions.Distributions;
 import eduni.distributions.Negexp;
 import eduni.distributions.Normal;
 import simu.framework.*;
@@ -30,7 +29,6 @@ public class MyEngine extends Engine {
 		events = new ArrayList<>();
 	}
 
-
 	public List<Event> getEventList() {
 		return this.events;
 	}
@@ -49,12 +47,8 @@ public class MyEngine extends Engine {
 
 	@Override
 	public void initialization() {
-		Distributions distributions = new Distributions();
-		ArrivalTimeGenerator arrivalTimeGenerator = new ArrivalTimeGenerator(distributions);
-		double lambda = 0.1;
-
 		for (int i = 1; i <= maxCustomers; i++) {
-			double arrivalTime = arrivalTimeGenerator.generateArrivalTime(lambda);
+			double arrivalTime = Clock.getInstance().getTime() + new Normal(3, 1).sample();
 			Event arrivalEvent = new Event(EventType.ARRIVAL, arrivalTime);
 			eventList.add(arrivalEvent);
 			events.add(arrivalEvent);
@@ -117,7 +111,6 @@ public class MyEngine extends Engine {
 			}
 		}
 	}
-
 
 	@Override
 	protected void results() {

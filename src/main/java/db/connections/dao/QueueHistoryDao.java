@@ -8,15 +8,18 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * This class represents the Data Access Object (DAO) for queue history.
- */
 public class QueueHistoryDao {
 
-    private String tableName;
+    private final String tableName;
 
+    // Constructor to accept a table name
     public QueueHistoryDao(String tableName) {
         this.tableName = tableName;
+    }
+
+    // Default constructor
+    public QueueHistoryDao() {
+        this("customer_queue_history");
     }
 
     /**
@@ -25,7 +28,7 @@ public class QueueHistoryDao {
      */
     public List<QueueHistory> getAllQueueHistories() {
         Connection conn = MariaDbConnection.getConnection();
-        String sql = String.format("SELECT id, customer_id, service_point_name, arrival_time, departure_time, queue_time FROM `%s`", tableName);
+        String sql = String.format("SELECT id, customer_id, service_point_name, arrival_time, departure_time, queue_time FROM %s", tableName);
         List<QueueHistory> histories = new ArrayList<>();
 
         try {
@@ -56,7 +59,7 @@ public class QueueHistoryDao {
      */
     public List<QueueHistory> getQueueHistoryForCustomer(int customerId) {
         Connection conn = MariaDbConnection.getConnection();
-        String sql = String.format("SELECT id, customer_id, service_point_name, arrival_time, departure_time, queue_time FROM `%s` WHERE customer_id=?", tableName);
+        String sql = String.format("SELECT id, customer_id, service_point_name, arrival_time, departure_time, queue_time FROM %s WHERE customer_id=?", tableName);
         List<QueueHistory> histories = new ArrayList<>();
 
         try {
@@ -86,7 +89,7 @@ public class QueueHistoryDao {
      */
     public void persist(QueueHistory history) {
         Connection conn = MariaDbConnection.getConnection();
-        String sql = String.format("INSERT INTO `%s` (customer_id, service_point_name, arrival_time, departure_time, queue_time) VALUES (?, ?, ?, ?, ?)", tableName);
+        String sql = String.format("INSERT INTO %s (customer_id, service_point_name, arrival_time, departure_time, queue_time) VALUES (?, ?, ?, ?, ?)", tableName);
         try {
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, history.getCustomerId());

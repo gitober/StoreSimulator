@@ -19,14 +19,16 @@ public class ServicePoint {
 	private boolean reserved;
 	private int queueLength;
 	private QueueHistoryDao queueStatusDao;
+	private String name;
 
-	public ServicePoint(ContinuousGenerator generator, EventList eventList, EventType eventType, String tableName) {
+	public ServicePoint(ContinuousGenerator generator, EventList eventList, EventType eventType, String name) {
 		this.generator = generator;
 		this.eventList = eventList;
 		this.eventType = eventType;
 		this.queue = new LinkedList<>();
 		this.queueLength = 0;
-		this.queueStatusDao = new QueueHistoryDao(tableName);
+		this.queueStatusDao = new QueueHistoryDao();
+		this.name = name;
 	}
 
 	public void addQueue(Customer customer) {
@@ -73,10 +75,9 @@ public class ServicePoint {
 		if (customer != null) {
 			LocalDateTime timestamp = LocalDateTime.now();
 			int customerId = customer.getId();
-			String servicePointName = "Service Point " + customer.getCurrentServicePoint();
 			double delay = generator.sample(); // Assuming delay is the waiting time
 
-			QueueHistory queueStatus = new QueueHistory(0, customerId, servicePointName, timestamp, timestamp, delay);
+			QueueHistory queueStatus = new QueueHistory(0, customerId, name, timestamp, timestamp, delay);
 			queueStatusDao.persist(queueStatus);
 		}
 	}

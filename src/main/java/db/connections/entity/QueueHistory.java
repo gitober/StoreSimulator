@@ -22,11 +22,6 @@ public class QueueHistory {
         this.queueTime = queueTime;
     }
 
-    public QueueHistory(int customerId, int eventType, int queueLength, LocalDateTime timestamp, LocalDateTime timestamp1, double delay) {
-    }
-
-    // Getters and setters
-
     public int getId() {
         return id;
     }

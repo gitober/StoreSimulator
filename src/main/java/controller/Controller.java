@@ -1,15 +1,12 @@
-/**
- * The Controller class manages the interaction between the user interface and the simulation engine.
- */
 package controller;
 
+import db.connections.dao.QueueHistoryDao;
+import db.connections.entity.QueueHistory;
 import javafx.application.Platform;
 import simu.model.ArrivalPattern;
 import simu.model.MyEngine;
 import view.ISimulatorUI;
 import view.IVisualisation;
-import db.connections.dao.QueueHistoryDao;
-import db.connections.entity.QueueHistory;
 
 import java.time.LocalDateTime;
 
@@ -30,7 +27,7 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 	public Controller(ISimulatorUI ui, String tableName) {
 		this.ui = ui;
 		this.visualisation = ui.getVisualisation();
-		this.queueHistoryDao = new QueueHistoryDao(tableName);
+		this.queueHistoryDao = new QueueHistoryDao(tableName); // Use parameterized constructor
 	}
 
 	/**
