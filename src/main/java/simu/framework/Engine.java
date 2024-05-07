@@ -78,7 +78,7 @@ public abstract class Engine extends Thread implements IEngine {
 
 		for (ServicePoint p : servicePoints) {
 			if (!p.isReserved() && p.isOnQueue()) {
-				p.beginService(clock.getTime()); // Pass the simulation time
+				p.beginService();
 			}
 		}
 	}

@@ -5,7 +5,6 @@ import eduni.distributions.Negexp;
 import eduni.distributions.Normal;
 import simu.framework.*;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,24 +24,18 @@ public class MyEngine extends Engine {
 		servicePoints[1] = new ServicePoint(new Normal(8, 3), eventList, EventType.DELI_COUNTER, "Deli Counter");
 		servicePoints[2] = new ServicePoint(new Normal(3, 1), eventList, EventType.VEGETABLE_SECTION, "Vegetable Section");
 		servicePoints[3] = new ServicePoint(new Normal(4, 2), eventList, EventType.CASHIER, "Cashier");
+		arrivalProcess = new ArrivalProcess(new Negexp(10, 5), eventList, EventType.ARRIVAL, maxCustomers);
 
-		arrivalProcess = new ArrivalProcess(new Negexp(10), eventList, EventType.ARRIVAL, maxCustomers);
 		events = new ArrayList<>();
 	}
 
 	@Override
 	public void initialization() {
-		for (int i = 1; i <= maxCustomers; i++) {
-			double arrivalTime = Clock.getInstance().getTime() + new Negexp(10).sample();
-			Event arrivalEvent = new Event(EventType.ARRIVAL, arrivalTime);
-			eventList.add(arrivalEvent);
-			events.add(arrivalEvent);
-		}
+		arrivalProcess.generateNext();
 	}
 
 	@Override
 	public void runEvent(Event event) {
-		double simulationTime = Clock.getInstance().getTime();
 		Customer customer;
 		int currentServicePoint;
 		double queueTime;
@@ -53,15 +46,14 @@ public class MyEngine extends Engine {
 			case ARRIVAL:
 				if (customers.size() < maxCustomers) {
 					customer = new Customer();
-					customer.setArrivalTime(simulationTime);
 					customers.add(customer);
 					nextServicePoint = customer.getNextServicePoint();
 					if (nextServicePoint != -1) {
-						customer.queueing(nextServicePoint, servicePoints[nextServicePoint - 1].getQueueLength());
+						customer.setArrivalTime(Clock.getInstance().getTime());
 						servicePoints[nextServicePoint - 1].addQueue(customer);
-						arrivalProcess.generateNext();
-						controller.visualiseCustomer(nextServicePoint);
+						controller.visualiseCustomer(nextServicePoint - 1);
 					}
+					arrivalProcess.generateNext();
 				}
 				break;
 
@@ -70,25 +62,18 @@ public class MyEngine extends Engine {
 			case VEGETABLE_SECTION:
 			case CASHIER:
 				currentServicePoint = ((EventType) event.getType()).ordinal();
-				customer = servicePoints[currentServicePoint - 1].removeQueue(simulationTime);
+				customer = servicePoints[currentServicePoint].removeQueue();
 				if (customer != null) {
-					// Calculate queue time only if there was someone ahead
-					if (servicePoints[currentServicePoint - 1].getQueueLength() > 0) {
-						queueTime = simulationTime - customer.getArrivalTime();
-					} else {
-						queueTime = 0.0;
-					}
-					customer.queueTime(currentServicePoint, queueTime);
-					serviceTime = new Normal(5, 2).sample();
-					customer.stayTime(currentServicePoint, serviceTime);
-					customer.setArrivalTime(simulationTime + serviceTime);
+					queueTime = Clock.getInstance().getTime() - customer.getArrivalTime();
+					customer.addServiceTime(currentServicePoint, queueTime);
 					nextServicePoint = customer.getNextServicePoint();
 					if (nextServicePoint != -1) {
+						customer.setArrivalTime(Clock.getInstance().getTime());
 						customer.queueing(nextServicePoint, servicePoints[nextServicePoint - 1].getQueueLength());
 						servicePoints[nextServicePoint - 1].addQueue(customer);
-						controller.visualiseCustomer(nextServicePoint);
+						controller.visualiseCustomer(nextServicePoint - 1);
 					} else {
-						customer.setRemovalTime(simulationTime + serviceTime);
+						customer.setRemovalTime(Clock.getInstance().getTime());
 						customer.recordSummary();
 					}
 				}
@@ -97,13 +82,10 @@ public class MyEngine extends Engine {
 
 		for (ServicePoint sp : servicePoints) {
 			if (sp.isOnQueue() && !sp.isReserved()) {
-				sp.beginService(simulationTime);
+				sp.beginService();
 			}
 		}
 	}
-
-
-
 
 	@Override
 	protected void results() {
