@@ -14,6 +14,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
+/**
+ * The Controller class serves as the intermediary between the view and the model,
+ * handling communication and control flow for the simulation.
+ */
 public class Controller implements IControllerVtoM, IControllerMtoV {
 	private MyEngine engine;
 	private ISimulatorUI ui;
@@ -24,6 +28,12 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 	private int w;
 	private int h;
 
+	/**
+	 * Constructs a Controller object with the specified UI and database table name.
+	 *
+	 * @param ui        The user interface for the simulation.
+	 * @param tableName The name of the table to be used for storing queue history data.
+	 */
 	public Controller(ISimulatorUI ui, String tableName) {
 		this.ui = ui;
 		this.w = w; // Add this line
@@ -32,7 +42,11 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 		this.queueHistoryDao = new QueueHistoryDao(tableName);
 	}
 
-
+	/**
+	 * Visualises a customer at the specified service point.
+	 *
+	 * @param servicePoint The service point where the customer should be visualised.
+	 */
 	@Override
 	public void visualiseCustomer(int servicePoint) {
 		final int ARRIVAL = 5;
@@ -45,9 +59,9 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 		}
 	}
 
-
-
-
+	/**
+	 * Starts the simulation and sets up the engine with parameters from the user interface.
+	 */
 	@Override
 	public void startSimulation() {
 		isSimulationStarted = true;
@@ -78,6 +92,9 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 		new Thread(engine).start();
 	}
 
+	/**
+	 * Decreases the simulation speed by increasing the delay.
+	 */
 	@Override
 	public void decreaseSpeed() {
 		if (ui != null) {
@@ -88,7 +105,9 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 		}
 	}
 
-
+	/**
+	 * Increases the simulation speed by reducing the delay.
+	 */
 	@Override
 	public void increaseSpeed() {
 		if (engine != null) {
@@ -96,12 +115,21 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 		}
 	}
 
-
+	/**
+	 * Displays the end time of the simulation on the user interface.
+	 *
+	 * @param time The time to be displayed as the end time.
+	 */
 	@Override
 	public void showEndTime(double time) {
 		Platform.runLater(() -> ui.setEndingTime(time));
 	}
 
+	/**
+	 * Sets the simulation speed by adjusting the delay.
+	 *
+	 * @param delay The delay to be set for the simulation speed.
+	 */
 	@Override
 	public void setSimulationSpeed(long delay) {
 		if (engine != null) {
@@ -110,6 +138,11 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 		}
 	}
 
+	/**
+	 * Sets the arrival pattern for customer simulation.
+	 *
+	 * @param pattern The desired pattern of customer arrivals.
+	 */
 	@Override
 	public void setArrivalPattern(ArrivalPattern pattern) {
 		desiredPattern = pattern;
@@ -120,10 +153,21 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 		System.out.println("Arrival pattern set to: " + describePattern(pattern));
 	}
 
+	/**
+	 * Returns the currently desired arrival pattern.
+	 *
+	 * @return The desired arrival pattern.
+	 */
 	public ArrivalPattern getDesiredPattern() {
 		return desiredPattern;
 	}
 
+	/**
+	 * Describes the given arrival pattern in a readable format.
+	 *
+	 * @param pattern The pattern to describe.
+	 * @return A string description of the pattern.
+	 */
 	private String describePattern(ArrivalPattern pattern) {
 		switch (pattern) {
 			case MORNINGRUSH:
@@ -137,34 +181,66 @@ public class Controller implements IControllerVtoM, IControllerMtoV {
 		}
 	}
 
+	/**
+	 * Sets the arrival pattern to "Morning Rush".
+	 */
 	public void setMorningRush() {
 		setArrivalPattern(ArrivalPattern.MORNINGRUSH);
 	}
 
+	/**
+	 * Sets the arrival pattern to "Midday Lull".
+	 */
 	public void setMiddayLull() {
 		setArrivalPattern(ArrivalPattern.MIDDAYLULL);
 	}
 
+	/**
+	 * Sets the arrival pattern to "Afternoon Rush".
+	 */
 	public void setAfternoonRush() {
 		setArrivalPattern(ArrivalPattern.AFTERNOONRUSH);
 	}
 
+	/**
+	 * Returns whether the simulation has started.
+	 *
+	 * @return True if the simulation has started, false otherwise.
+	 */
 	public boolean getIsSimulationStarted() {
 		return isSimulationStarted;
 	}
 
+	/**
+	 * Sets the engine to be used by the controller.
+	 *
+	 * @param engine The engine to be set.
+	 */
 	public void setEngine(MyEngine engine) {
 		this.engine = engine;
 	}
 
+	/**
+	 * Records the history of a customer's queue experience in the database.
+	 *
+	 * @param customerId       The ID of the customer.
+	 * @param servicePointName The name of the service point.
+	 * @param arrivalTime      The arrival time at the service point.
+	 * @param departureTime    The departure time from the service point.
+	 * @param queueTime        The time spent in the queue.
+	 */
 	private void recordQueueHistory(int customerId, String servicePointName, LocalDateTime arrivalTime, LocalDateTime departureTime, double queueTime) {
 		QueueHistory history = new QueueHistory(0, customerId, servicePointName, arrivalTime, departureTime, queueTime);
 		queueHistoryDao.persist(history);
 	}
 
-
+	/**
+	 * Returns the name of the service point given its identifier.
+	 *
+	 * @param servicePoint The identifier of the service point.
+	 * @return The name of the service point.
+	 */
 	private String getServicePointName(int servicePoint) {
 		return "Service Point " + servicePoint;
 	}
-
 }
