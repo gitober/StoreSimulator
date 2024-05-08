@@ -95,7 +95,6 @@ public class SimulatorGUI extends Application implements ISimulatorUI {
 		});
 
 
-
 		// Set up other buttons
 		Button slowButton = new Button("Slow down");
 		slowButton.setOnAction(e -> controller.decreaseSpeed());

@@ -114,10 +114,9 @@ public class Visualisation extends IVisualisation {
 			servicePointsOrder.add(EXIT); // Then exit
 			customer.setUserData(servicePointsOrder);
 			queues.get(ARRIVAL).add(customer);
-			serveCustomer(ARRIVAL, customer);
+			serveCustomer(ARRIVAL);
 		});
 	}
-
 
 	private List<Integer> generateRandomOrder() {
 		List<Integer> order = new ArrayList<>(Arrays.asList(SERVICE_DESK, DELI_COUNTER, VEGETABLE_SECTION));
@@ -125,20 +124,14 @@ public class Visualisation extends IVisualisation {
 		return order;
 	}
 
-	private void serveCustomer(int servicePoint, Circle customer) {
+	private void serveCustomer(int servicePoint) {
 		Queue<Circle> queue = queues.get(servicePoint);
 
-		// Animate the customer in the queue
-		Platform.runLater(() -> {
-			if (queue.contains(customer) && !serving[servicePoint]) {
-				serving[servicePoint] = true;
-				Circle nextCustomer = queue.poll();
-				if (nextCustomer != null) {
-					moveToNextServicePoint(nextCustomer, servicePoint);
-				}
-				serving[servicePoint] = false;
-			}
-		});
+		if (!queue.isEmpty() && !serving[servicePoint]) {
+			serving[servicePoint] = true;
+			Circle nextCustomer = queue.poll();
+			moveToNextServicePoint(nextCustomer, servicePoint);
+		}
 	}
 
 	private void moveToNextServicePoint(Circle customer, int currentServicePoint) {
@@ -156,8 +149,10 @@ public class Visualisation extends IVisualisation {
 				pane.getChildren().remove(customer);
 			} else {
 				queues.get(nextServicePoint).add(customer);
-				serveCustomer(nextServicePoint, customer);
+				Platform.runLater(() -> serveCustomer(nextServicePoint));
 			}
+			serving[currentServicePoint] = false;
+			Platform.runLater(() -> serveCustomer(currentServicePoint)); // Serve next customer in the current queue
 		});
 		transition.play();
 	}
@@ -169,14 +164,14 @@ public class Visualisation extends IVisualisation {
 
 		// Handle queuing
 		int queuePosition = queues.get(servicePoint).size();
-		coordinates[0] += queuePosition * queueHorizontalOffset;
-		coordinates[1] += queuePosition * queueSpacing;
+		double xOffset = queueHorizontalOffset * (queuePosition % 3); // Adjust horizontal spacing for three customers per row
+		double yOffset = queueSpacing * (queuePosition / 3); // New row after three customers
 
-		path.getElements().add(new HLineTo(coordinates[0]));
-		path.getElements().add(new VLineTo(coordinates[1]));
+		path.getElements().add(new HLineTo(coordinates[0] + xOffset));
+		path.getElements().add(new VLineTo(coordinates[1] + yOffset));
 
-		customer.setCenterX(coordinates[0]);
-		customer.setCenterY(coordinates[1]);
+		customer.setCenterX(coordinates[0] + xOffset);
+		customer.setCenterY(coordinates[1] + yOffset);
 
 		return path;
 	}
