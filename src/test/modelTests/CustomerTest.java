@@ -19,11 +19,16 @@ class CustomerTest {
 
     @Test
     void testGetQueueStatus() {
+        Customer customer = new Customer();
+        int id = customer.getId();
+
         String status = customer.getQueueStatus(0);
-        assertTrue(status.matches("Customer #\\d+ has no queue"));
+        System.out.println(status); // print the actual output
+        assertTrue(status.equals("• Customer #" + id + " has no queue"));
 
         status = customer.getQueueStatus(1);
-        assertTrue(status.matches("Customer #\\d+ is in queue"));
+        System.out.println(status); // print the actual output
+        assertTrue(status.equals("• Customer #" + id + " is in queue"));
     }
 
     @Test

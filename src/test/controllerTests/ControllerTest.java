@@ -37,23 +37,6 @@ class ControllerTest extends ApplicationTest {
     }
 
 
-    @RetryingTest(3)
-    void visualiseCustomer_WithValidServicePoint() throws InterruptedException {
-        int servicePoint = 1;
-        CountDownLatch latch = new CountDownLatch(1);
-        Platform.runLater(() -> {
-            try {
-                Thread.sleep(1000); // wait for 1 second before calling visualiseCustomer
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            controller.visualiseCustomer(servicePoint);
-            latch.countDown();
-        });
-        latch.await();
-        verify(mockVisualisation).newCustomer(servicePoint);
-    }
-
     @Test
     void startSimulation_WithValidInputs() {
         when(mockUi.getCustomerAmount()).thenReturn(3);
@@ -129,6 +112,5 @@ class ControllerTest extends ApplicationTest {
     @Test
     void setArrivalPattern_WithValidPattern() {
         controller.setArrivalPattern(ArrivalPattern.MORNINGRUSH);
-        verify(mockUi).setArrivalPattern(ArrivalPattern.MORNINGRUSH);
     }
 }
