@@ -32,7 +32,7 @@ public class Customer {
 		servicePoints.add(4); // Cashier is always the last stop
 
 		serviceTimes = new LinkedHashMap<>();
-		Trace.out(Trace.Level.INFO, "Customer #" + id + " has arrived at the store at " + formatTime(arrivalTime));
+		Trace.out(Trace.Level.INFO, "• The simulation for Customer #" + id + " has started at the store at " + formatTime(arrivalTime));
 	}
 
 	public int getId() {
@@ -49,9 +49,9 @@ public class Customer {
 
 	public String getQueueStatus(int queueLength) {
 		if (queueLength == 0) {
-			return "Customer #" + id + " has no queue";
+			return "• Customer #" + id + " has no queue";
 		} else {
-			return "Customer #" + id + " is in queue";
+			return "• Customer #" + id + " is in queue";
 		}
 	}
 
@@ -101,7 +101,7 @@ public class Customer {
 	}
 
 	public void queueing(int servicePoint, int queueLength) {
-		Trace.out(Trace.Level.INFO, "Customer #" + id + " has arrived at " + getServicePointName(servicePoint));
+		Trace.out(Trace.Level.INFO, "• Customer #" + id + " has arrived at " + getServicePointName(servicePoint));
 		// Call getQueueStatus method here to determine the queue status
 		String queueStatus = getQueueStatus(queueLength);
 		Trace.out(Trace.Level.INFO, queueStatus);
@@ -109,20 +109,24 @@ public class Customer {
 
 	public double queueTime(int servicePoint, double timeInQueue) {
 		double nonNegativeTime = Math.max(0, timeInQueue);
-		Trace.out(Trace.Level.INFO, "Customer #" + id + " spent " + df.format(nonNegativeTime) + " minutes in the queue at " + getServicePointName(servicePoint));
-		Trace.out(Trace.Level.INFO, "Customer #" + id + " has left " + getServicePointName(servicePoint));
+		if (nonNegativeTime > 0) {
+			Trace.out(Trace.Level.INFO, "• Customer #" + id + " spent " + df.format(nonNegativeTime) + " minutes in the queue at " + getServicePointName(servicePoint));
+		} else {
+			Trace.out(Trace.Level.INFO, "• Customer #" + id + " spent no time in the queue at " + getServicePointName(servicePoint));
+		}
+		Trace.out(Trace.Level.INFO, "• Customer #" + id + " has left " + getServicePointName(servicePoint));
 		return nonNegativeTime;
 	}
 
 	public void recordSummary() {
-		summary.append("\nSummary for Customer #").append(id).append(":\n\n");
+		summary.append("\n• Summary for Customer #").append(id).append(":\n\n");
 		double previousTime = arrivalTime;
 		for (Map.Entry<Integer, Double> entry : serviceTimes.entrySet()) {
 			int servicePoint = entry.getKey();
 			double timeSpent = Math.max(0, entry.getValue());
 			double arrival = previousTime;
 			double removed = arrival + timeSpent;
-			summary.append("Customer #").append(id)
+			summary.append("• Customer #").append(id)
 					.append(" arrived at ").append(getServicePointName(servicePoint))
 					.append(" at ").append(formatTime(arrival))
 					.append(", left at ").append(formatTime(removed))
@@ -131,14 +135,14 @@ public class Customer {
 		}
 
 		removalTime = previousTime;
-		summary.append("Customer #").append(id)
+		summary.append("• Customer #").append(id)
 				.append(" has exited the store at ").append(formatTime(removalTime)).append("\n\n");
 		double totalQueueTime = removalTime - arrivalTime;
-		summary.append("Customer #").append(id)
-				.append(" spent a total of ").append(df.format(totalQueueTime)).append(" minutes in the queues.\n\n");
+		summary.append("• Customer #").append(id)
+				.append(" spent a total of ").append(df.format(totalQueueTime)).append(" minutes in the queues. The simulation has ended.\n\n");
 		sum += totalQueueTime;
 		double averageQueueTime = sum / (double) nextId;
-		summary.append("The average time customers have spent in the queues so far is: ")
+		summary.append("• The average time customers have spent in the queues so far is: ")
 				.append(df.format(averageQueueTime)).append(" minutes\n");
 	}
 

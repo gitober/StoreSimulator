@@ -104,7 +104,7 @@ public class Visualisation extends IVisualisation {
 			throw new IllegalArgumentException("Customers should start at ARRIVAL.");
 		}
 
-		Circle customer = new Circle(10, Color.BLUE);
+		Circle customer = new Circle(10, Color.BLACK);
 		Platform.runLater(() -> {
 			customer.setCenterX(servicePoints[ARRIVAL][0]);
 			customer.setCenterY(servicePoints[ARRIVAL][1]);

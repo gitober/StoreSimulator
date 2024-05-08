@@ -69,9 +69,10 @@ public class MyEngine extends Engine {
 	public void runEvent(Event event) {
 		Customer customer;
 		int currentServicePoint;
-		double queueTime;
+		double queueTime = 0.0;
 		double serviceTime = 0.0;
-		int nextServicePoint = -1; // Initialize nextServicePoint to a default value
+		double departureTime;
+		int nextServicePoint = -1;
 		Connection connection = MariaDbConnection.getConnection();
 
 		switch ((EventType) event.getType()) {
@@ -81,13 +82,13 @@ public class MyEngine extends Engine {
 					customers.add(customer); // Keep track of all customers
 					nextServicePoint = customer.getNextServicePoint();
 					if (nextServicePoint != -1) {
-						queueTime = Clock.getInstance().getTime();
-						customer.setArrivalTime(queueTime);
+						double arrivalTime = Clock.getInstance().getTime();
+						customer.setArrivalTime(arrivalTime);
 						customer.queueing(nextServicePoint, servicePoints[nextServicePoint - 1].getQueueLength());
 						servicePoints[nextServicePoint - 1].addQueue(customer);
 						arrivalProcess.generateNext();
 						controller.visualiseCustomer(nextServicePoint);
-						recordServicePoint(customer.getId(), servicePoints[nextServicePoint - 1].getName(), customer.getArrivalTime(), serviceTime, queueTime, connection);
+						recordServicePoint(customer.getId(), servicePoints[nextServicePoint - 1].getName(), arrivalTime, arrivalTime, 0.0, connection);
 					}
 				}
 				break;
@@ -99,26 +100,31 @@ public class MyEngine extends Engine {
 				currentServicePoint = ((EventType) event.getType()).ordinal();
 				customer = servicePoints[currentServicePoint - 1].removeQueue();
 				if (customer != null) {
-					// Only calculate the queue time if there's more than one customer in the store
-					if (customers.size() > 1) {
-						queueTime = Clock.getInstance().getTime() - customer.getArrivalTime();
+					double currentTime = Clock.getInstance().getTime();
+					int queueLength = servicePoints[currentServicePoint - 1].getQueueLength();
+
+					// Only calculate the queue time if the customer was actually in a queue
+					if (queueLength > 0) {
+						queueTime = currentTime - customer.getArrivalTime();
 					} else {
-						queueTime = 0;
+						queueTime = 0.0;
 					}
-					serviceTime = Clock.getInstance().getTime();
+					serviceTime = currentTime;
 					queueTime = customer.queueTime(currentServicePoint, queueTime);
 					customer.addServiceTime(currentServicePoint, queueTime);
+
+					// Record the customer's departure from the current service point
+					departureTime = Clock.getInstance().getTime();
+					recordServicePoint(customer.getId(), servicePoints[currentServicePoint - 1].getName(), customer.getArrivalTime(), departureTime, queueTime, connection);
+
 					nextServicePoint = customer.getNextServicePoint();
 					if (nextServicePoint != -1) {
-						customer.setArrivalTime(serviceTime);
+						customer.setArrivalTime(departureTime);
 						customer.queueing(nextServicePoint, servicePoints[nextServicePoint - 1].getQueueLength());
 						servicePoints[nextServicePoint - 1].addQueue(customer);
 						controller.visualiseCustomer(nextServicePoint);
-						recordServicePoint(customer.getId(), servicePoints[nextServicePoint - 1].getName(), customer.getArrivalTime(), serviceTime, queueTime, connection);
-
-
 					} else {
-						customer.setRemovalTime(serviceTime);
+						customer.setRemovalTime(departureTime);
 						customer.recordSummary(); // Record the summary instead of printing
 					}
 				}
@@ -133,22 +139,25 @@ public class MyEngine extends Engine {
 	}
 
 
-
 	private void recordServicePoint(int customerId, String servicePointName, double arrivalTime, double departureTime, double queueTime, Connection connection) {
-		// Insert the service point name, customer ID, arrival time, departure time, and queue time into the customer_queue_history table
 		try {
-			PreparedStatement statement = connection.prepareStatement("INSERT INTO customer_queue_history (customer_id, service_point_name, arrival_time, departure_time, queue_time) VALUES (?, ?, ?, ?, ?)");
+			System.out.printf("Recording: Customer #%d, Service Point: %s, Arrival: %.2f, Departure: %.2f, Queue Time: %.2f minutes\n",
+					customerId, servicePointName, arrivalTime, departureTime, queueTime);
+
+			PreparedStatement statement = connection.prepareStatement(
+					"INSERT INTO customer_queue_history (customer_id, service_point_name, arrival_time, departure_time, queue_time) VALUES (?, ?, ?, ?, ?)"
+			);
 			statement.setInt(1, customerId);
 			statement.setString(2, servicePointName);
-			statement.setTimestamp(3, new Timestamp((long) arrivalTime)); // Assuming arrivalTime is in milliseconds
-			statement.setTimestamp(4, new Timestamp((long) departureTime)); // Assuming departureTime is in milliseconds
+			statement.setTimestamp(3, new Timestamp((long) arrivalTime * 1000)); // Convert to milliseconds
+			statement.setTimestamp(4, new Timestamp((long) departureTime * 1000)); // Convert to milliseconds
 			statement.setDouble(5, queueTime);
 			statement.executeUpdate();
 		} catch (SQLException e) {
-			// Handle any SQL exceptions
 			e.printStackTrace();
 		}
 	}
+
 
 
 	@Override
