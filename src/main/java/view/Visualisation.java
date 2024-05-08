@@ -1,3 +1,6 @@
+/**
+ * Package containing the user interface components and visualization tools.
+ */
 package view;
 
 import javafx.animation.PathTransition;
@@ -16,6 +19,10 @@ import javafx.util.Duration;
 
 import java.util.*;
 
+/**
+ * Implementation of the {@link IVisualisation} class, responsible for visualizing the customer journey
+ * through different service points in a store simulation.
+ */
 public class Visualisation extends IVisualisation {
 
 	private final Canvas canvas;
@@ -38,6 +45,12 @@ public class Visualisation extends IVisualisation {
 	private static final int EXIT = 4;
 	private static final int ARRIVAL = 5;
 
+	/**
+	 * Constructs a new Visualisation object with the specified width and height.
+	 *
+	 * @param w The width of the visualization canvas.
+	 * @param h The height of the visualization canvas.
+	 */
 	public Visualisation(int w, int h) {
 		super(w, h);
 		canvas = new Canvas(w, h);
@@ -67,14 +80,27 @@ public class Visualisation extends IVisualisation {
 		this.getChildren().add(pane);
 	}
 
+	/**
+	 * Returns the {@link GraphicsContext} associated with the visualization canvas.
+	 *
+	 * @return The graphics context.
+	 */
 	public GraphicsContext getGraphicsContext2D() {
 		return gc;
 	}
 
+	/**
+	 * Returns the {@link Pane} containing the visualization canvas.
+	 *
+	 * @return The pane containing the canvas.
+	 */
 	public Pane getPane() {
 		return pane;
 	}
 
+	/**
+	 * Clears the display, removing all visual elements and re-drawing the background.
+	 */
 	@Override
 	public void clearDisplay() {
 		gc.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -86,6 +112,11 @@ public class Visualisation extends IVisualisation {
 		}
 	}
 
+	/**
+	 * Visualizes a customer at the specified service point.
+	 *
+	 * @param servicePoint The service point number where the customer should be visualized.
+	 */
 	@Override
 	public void visualiseCustomer(int servicePoint) {
 		final int ARRIVAL = 5;
@@ -97,6 +128,11 @@ public class Visualisation extends IVisualisation {
 		Platform.runLater(() -> newCustomer(servicePoint));
 	}
 
+	/**
+	 * Adds a new customer to the visualization starting at the specified service point.
+	 *
+	 * @param servicePoint The service point number where the customer should be added.
+	 */
 	@Override
 	public void newCustomer(int servicePoint) {
 		final int ARRIVAL = 5;
@@ -118,12 +154,22 @@ public class Visualisation extends IVisualisation {
 		});
 	}
 
+	/**
+	 * Generates a random order for the customer to visit different service points.
+	 *
+	 * @return A list of service points in random order.
+	 */
 	private List<Integer> generateRandomOrder() {
 		List<Integer> order = new ArrayList<>(Arrays.asList(SERVICE_DESK, DELI_COUNTER, VEGETABLE_SECTION));
 		Collections.shuffle(order);
 		return order;
 	}
 
+	/**
+	 * Initiates service for the next customer at the specified service point.
+	 *
+	 * @param servicePoint The service point number.
+	 */
 	private void serveCustomer(int servicePoint) {
 		Queue<Circle> queue = queues.get(servicePoint);
 
@@ -134,6 +180,12 @@ public class Visualisation extends IVisualisation {
 		}
 	}
 
+	/**
+	 * Moves the customer to the next service point according to their predefined order.
+	 *
+	 * @param customer           The customer to be moved.
+	 * @param currentServicePoint The current service point number.
+	 */
 	private void moveToNextServicePoint(Circle customer, int currentServicePoint) {
 		List<Integer> servicePointsOrder = (List<Integer>) customer.getUserData();
 		if (servicePointsOrder.isEmpty()) return;
@@ -157,6 +209,13 @@ public class Visualisation extends IVisualisation {
 		transition.play();
 	}
 
+	/**
+	 * Creates a path from the customer's current position to the specified service point.
+	 *
+	 * @param customer     The customer circle to be moved.
+	 * @param servicePoint The target service point number.
+	 * @return The path to the specified service point.
+	 */
 	private Path createPathToServicePoint(Circle customer, int servicePoint) {
 		Path path = new Path();
 		path.getElements().add(new MoveTo(customer.getCenterX(), customer.getCenterY()));
@@ -175,5 +234,4 @@ public class Visualisation extends IVisualisation {
 
 		return path;
 	}
-
 }

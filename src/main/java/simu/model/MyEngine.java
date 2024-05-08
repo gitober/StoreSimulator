@@ -1,3 +1,6 @@
+/**
+ * Package containing simulation models and related components.
+ */
 package simu.model;
 
 import simu.framework.ArrivalTimeGenerator;
@@ -16,6 +19,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Simulation engine class that orchestrates the entire simulation flow.
+ * It controls the creation of customers, manages their service at different service points,
+ * and records data about customer flow through service points into a database.
+ */
 public class MyEngine extends Engine {
 	private Connection connection;
 	private ArrivalProcess arrivalProcess;
@@ -24,6 +32,12 @@ public class MyEngine extends Engine {
 	private List<Customer> customers = new ArrayList<>();
 	private List<Event> events;
 
+	/**
+	 * Constructs a new simulation engine.
+	 *
+	 * @param controller   The controller for visualization updates.
+	 * @param maxCustomers The maximum number of customers for the simulation.
+	 */
 	public MyEngine(IControllerMtoV controller, int maxCustomers) {
 		super(controller);
 		this.maxCustomers = maxCustomers;
@@ -39,22 +53,45 @@ public class MyEngine extends Engine {
 		events = new ArrayList<>();
 	}
 
+	/**
+	 * Returns the list of recorded events.
+	 *
+	 * @return A list of events.
+	 */
 	public List<Event> getEventList() {
 		return this.events;
 	}
 
+	/**
+	 * Returns the list of customers processed in the simulation.
+	 *
+	 * @return A list of customers.
+	 */
 	public List<Customer> getCustomers() {
 		return this.customers;
 	}
 
+	/**
+	 * Returns the array of service points in the simulation.
+	 *
+	 * @return An array of service points.
+	 */
 	public ServicePoint[] getServicePoints() {
 		return this.servicePoints;
 	}
 
+	/**
+	 * Returns the arrival process object used in the simulation.
+	 *
+	 * @return The arrival process.
+	 */
 	public ArrivalProcess getArrivalProcess() {
 		return this.arrivalProcess;
 	}
 
+	/**
+	 * Initializes the simulation with a set of initial arrival events.
+	 */
 	@Override
 	public void initialization() {
 		for (int i = 1; i <= maxCustomers; i++) {
@@ -65,6 +102,11 @@ public class MyEngine extends Engine {
 		}
 	}
 
+	/**
+	 * Processes an event and manages customer flow through service points.
+	 *
+	 * @param event The event to be processed.
+	 */
 	@Override
 	public void runEvent(Event event) {
 		Customer customer;
@@ -79,7 +121,7 @@ public class MyEngine extends Engine {
 			case ARRIVAL:
 				if (customers.size() < maxCustomers) {
 					customer = new Customer();
-					customers.add(customer); // Keep track of all customers
+					customers.add(customer);
 					nextServicePoint = customer.getNextServicePoint();
 					if (nextServicePoint != -1) {
 						double arrivalTime = Clock.getInstance().getTime();
@@ -103,7 +145,6 @@ public class MyEngine extends Engine {
 					double currentTime = Clock.getInstance().getTime();
 					int queueLength = servicePoints[currentServicePoint - 1].getQueueLength();
 
-					// Only calculate the queue time if the customer was actually in a queue
 					if (queueLength > 0) {
 						queueTime = currentTime - customer.getArrivalTime();
 					} else {
@@ -113,7 +154,6 @@ public class MyEngine extends Engine {
 					queueTime = customer.queueTime(currentServicePoint, queueTime);
 					customer.addServiceTime(currentServicePoint, queueTime);
 
-					// Record the customer's departure from the current service point
 					departureTime = Clock.getInstance().getTime();
 					recordServicePoint(customer.getId(), servicePoints[currentServicePoint - 1].getName(), customer.getArrivalTime(), departureTime, queueTime, connection);
 
@@ -125,7 +165,7 @@ public class MyEngine extends Engine {
 						controller.visualiseCustomer(nextServicePoint);
 					} else {
 						customer.setRemovalTime(departureTime);
-						customer.recordSummary(); // Record the summary instead of printing
+						customer.recordSummary();
 					}
 				}
 				break;
@@ -138,7 +178,16 @@ public class MyEngine extends Engine {
 		}
 	}
 
-
+	/**
+	 * Records a customer's service point data in the database.
+	 *
+	 * @param customerId       The customer ID.
+	 * @param servicePointName The name of the service point.
+	 * @param arrivalTime      The time the customer arrived at the service point.
+	 * @param departureTime    The time the customer departed from the service point.
+	 * @param queueTime        The time the customer spent in the queue.
+	 * @param connection       The database connection.
+	 */
 	private void recordServicePoint(int customerId, String servicePointName, double arrivalTime, double departureTime, double queueTime, Connection connection) {
 		try {
 			System.out.printf("Recording: Customer #%d, Service Point: %s, Arrival: %.2f, Departure: %.2f, Queue Time: %.2f minutes\n",
@@ -149,8 +198,8 @@ public class MyEngine extends Engine {
 			);
 			statement.setInt(1, customerId);
 			statement.setString(2, servicePointName);
-			statement.setTimestamp(3, new Timestamp((long) arrivalTime * 1000)); // Convert to milliseconds
-			statement.setTimestamp(4, new Timestamp((long) departureTime * 1000)); // Convert to milliseconds
+			statement.setTimestamp(3, new Timestamp((long) arrivalTime * 1000));
+			statement.setTimestamp(4, new Timestamp((long) departureTime * 1000));
 			statement.setDouble(5, queueTime);
 			statement.executeUpdate();
 		} catch (SQLException e) {
@@ -158,8 +207,9 @@ public class MyEngine extends Engine {
 		}
 	}
 
-
-
+	/**
+	 * Shows the end time of the simulation and outputs a summary of all customers.
+	 */
 	@Override
 	protected void results() {
 		controller.showEndTime(Clock.getInstance().getTime());
@@ -168,6 +218,11 @@ public class MyEngine extends Engine {
 		}
 	}
 
+	/**
+	 * Sets the arrival pattern of customers in the simulation.
+	 *
+	 * @param pattern The desired arrival pattern.
+	 */
 	public void setArrivalPattern(ArrivalPattern pattern) {
 		String message;
 		switch (pattern) {
