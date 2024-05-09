@@ -30,7 +30,7 @@ public class MariaDbConnection {
         if (conn == null) {
             // connect if necessary
             try {
-                conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/market?user=root&password=Raitaseepra");
+                conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/market?user=appuser9&password=password");
             } catch (SQLException e) {
                 System.out.println("Connection failed.");
                 e.printStackTrace();
@@ -50,5 +50,13 @@ public class MariaDbConnection {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    /**
+     * Sets the connection to the database. This method is primarily intended for testing purposes.
+     *
+     * @param conn The connection to the database.
+     */
+    public static void setConnection(Connection conn) {
+        MariaDbConnection.conn = conn;
     }
 }
