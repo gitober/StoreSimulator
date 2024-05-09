@@ -111,6 +111,11 @@ public class QueueHistoryTest {
 
     @Test
     public void shouldNotReturnIncorrectDepartureTime() {
+        // Set the departure time to a different time from the current time
+        LocalDateTime differentTime = now.plusSeconds(1);
+        queueHistory.setDepartureTime(differentTime);
+
+        // Assert that the departure time is not equal to the current time
         assertNotEquals(LocalDateTime.now(), queueHistory.getDepartureTime());
     }
 

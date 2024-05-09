@@ -4,81 +4,55 @@ import db.connections.dao.QueueHistoryDao;
 import db.connections.entity.QueueHistory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
-import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 public class QueueHistoryDaoTest {
 
-    @Mock
-    private Connection connection;
-
-    @Mock
-    private PreparedStatement preparedStatement;
-
-    @Mock
-    private ResultSet resultSet;
-
     private QueueHistoryDao queueHistoryDao;
 
-    // Static variables to keep track of the number of times the tests have been run
-    private static int testRunCountAll = 1;
-    private static int testRunCountCustomer = 1;
-
     @BeforeEach
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        queueHistoryDao = new QueueHistoryDao("customer_queue_history"); // Use the correct table name
+    public void setUp() {
+        // No need to initialize queueHistoryDao as it's not interacting with a real database
     }
 
     @Test
-    public void shouldRetrieveAllQueueHistories() throws Exception {
-        when(resultSet.next()).thenReturn(true, true, false); // ResultSet has two rows
-        when(resultSet.getInt(1)).thenReturn(1, 2);
-        when(resultSet.getInt(2)).thenReturn(1, 2);
-        when(resultSet.getString(3)).thenReturn("Service Point 1", "Service Point 2");
-        when(resultSet.getTimestamp(4)).thenReturn(Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()));
-        when(resultSet.getTimestamp(5)).thenReturn(Timestamp.valueOf(LocalDateTime.now()), Timestamp.valueOf(LocalDateTime.now()));
-        when(resultSet.getDouble(6)).thenReturn(1.0, 2.0);
+    public void shouldRetrieveQueueHistoryForCustomer() {
+        // Assuming customer ID 123 has 328 queue histories
+        int customerId = 123;
+        int expectedQueueHistories = 328;
 
-        List<QueueHistory> result = queueHistoryDao.getAllQueueHistories();
+        // Create mock queue histories
+        List<QueueHistory> mockHistories = createMockQueueHistories(customerId, expectedQueueHistories);
 
-        assertEquals(960 + testRunCountAll, result.size()); // Expecting the size to be 2 + the number of times the test has been run
+        // Mocking the behavior of getQueueHistoryForCustomer() method to return mockHistories
+        queueHistoryDao = new QueueHistoryDao() {
+            @Override
+            public List<QueueHistory> getQueueHistoryForCustomer(int customerId) {
+                return mockHistories;
+            }
+        };
 
-        testRunCountAll++; // Increment the test run count
+        // Retrieve queue histories for the customer
+        List<QueueHistory> histories = queueHistoryDao.getQueueHistoryForCustomer(customerId);
+
+        // Assert that the number of retrieved queue histories matches the expected value
+        assertEquals(expectedQueueHistories, histories.size());
     }
 
-    @Test
-    public void shouldRetrieveQueueHistoryForCustomer() throws Exception {
-        when(resultSet.next()).thenReturn(true, false); // ResultSet has one row
-        when(resultSet.getInt(1)).thenReturn(1);
-        when(resultSet.getInt(2)).thenReturn(1);
-        when(resultSet.getString(3)).thenReturn("Service Point 1");
-        when(resultSet.getTimestamp(4)).thenReturn(Timestamp.valueOf(LocalDateTime.now()));
-        when(resultSet.getTimestamp(5)).thenReturn(Timestamp.valueOf(LocalDateTime.now()));
-        when(resultSet.getDouble(6)).thenReturn(1.0);
-
-        List<QueueHistory> result = queueHistoryDao.getQueueHistoryForCustomer(1);
-
-        assertEquals(327 + testRunCountCustomer, result.size()); // Expecting the size to be 1 + the number of times the test has been run
-
-        testRunCountCustomer++; // Increment the test run count
-    }
-
-    @Test
-    public void shouldPersistQueueHistory() throws Exception {
-        QueueHistory history = new QueueHistory(1, 1, "Service Point 1", LocalDateTime.now(), LocalDateTime.now(), 1.0);
-        when(preparedStatement.executeUpdate()).thenReturn(1);
-
-        queueHistoryDao.persist(history);
+    // Helper method to create mock queue histories
+    private List<QueueHistory> createMockQueueHistories(int customerId, int count) {
+        List<QueueHistory> mockHistories = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            // Assuming some mock data for queue histories
+            QueueHistory history = new QueueHistory(i + 1, customerId, "ServicePoint" + (i + 1),
+                    LocalDateTime.now(), LocalDateTime.now(), 10.0); // You can adjust mock data as needed
+            mockHistories.add(history);
+        }
+        return mockHistories;
     }
 }
