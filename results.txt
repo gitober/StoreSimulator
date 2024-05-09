@@ -1,0 +1,11 @@
+Aika 0: Jonon pituus = 10
+Aika 1: Jonon pituus = 20
+Aika 2: Jonon pituus = 30
+Aika 3: Jonon pituus = 40
+Aika 4: Jonon pituus = 20
+Aika 5: Jonon pituus = 30
+Aika 6: Jonon pituus = 40
+Aika 7: Jonon pituus = 50
+Aika 8: Jonon pituus = 30
+Aika 9: Jonon pituus = 20
+Aika 10: Jonon pituus = 10
