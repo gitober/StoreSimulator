@@ -1,16 +1,19 @@
 package simu.analysis;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import org.knowm.xchart.*;
 
 public class SimulationResults {
 
     public static void main(String[] args) {
-        // Test the graphing functionality with dummy data
-        List<Integer> queueLengths = List.of(10, 20, 30, 40, 20, 30, 40, 50, 30, 20, 10);
+        // Example: Read simulation results from a file and create a graph
+        List<Integer> queueLengths = readResultsFromFile("queue_results.txt");
         saveResultsAndCreateGraph(queueLengths);
     }
 
@@ -22,37 +25,55 @@ public class SimulationResults {
     private static void saveResultsToFile(List<Integer> data) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("results.txt"))) {
             for (int i = 0; i < data.size(); i++) {
-                writer.write("Aika " + i + ": Jonon pituus = " + data.get(i) + "\n");
+                writer.write("Time " + i + ": Queue length = " + data.get(i) + "\n");
             }
-            System.out.println("Tulokset tallennettu tiedostoon results.txt");
+            System.out.println("Results saved to file results.txt");
         } catch (IOException e) {
-            System.err.println("Virhe tallennettaessa tuloksia: " + e.getMessage());
+            System.err.println("Error saving results: " + e.getMessage());
         }
     }
 
     private static void createGraph(List<Integer> data) {
-        // Valmistellaan data XChart-kirjastoa varten
-        List<Integer> xData = new java.util.ArrayList<>();
+        // Prepare data for XChart
+        List<Integer> xData = new ArrayList<>();
         for (int i = 0; i < data.size(); i++) {
             xData.add(i);
         }
 
-        // Luodaan viivakaavio (Line Chart)
+        // Create line chart
         XYChart chart = new XYChartBuilder().width(800).height(600)
-                .title("Jonojen käyttäytyminen ajan suhteen")
-                .xAxisTitle("Aika")
-                .yAxisTitle("Jonon pituus")
+                .title("Queue Behavior Over Time")
+                .xAxisTitle("Time")
+                .yAxisTitle("Queue Length")
                 .build();
 
-        // Lisätään data kaavioon
-        chart.addSeries("Jonon pituus", xData, data);
+        // Add data to the chart
+        chart.addSeries("Queue Length", xData, data);
 
-        // Tallennetaan kuva tiedostoon
+        // Save graph to a file
         try {
             BitmapEncoder.saveBitmap(chart, "queue_behavior", BitmapEncoder.BitmapFormat.PNG);
-            System.out.println("Kaavio tallennettu tiedostoon queue_behavior.png");
+            System.out.println("Chart saved to file queue_behavior.png");
         } catch (IOException e) {
-            System.err.println("Virhe tallennettaessa kaaviota: " + e.getMessage());
+            System.err.println("Error saving chart: " + e.getMessage());
         }
+    }
+
+    private static List<Integer> readResultsFromFile(String filename) {
+        List<Integer> data = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Assuming the format is "Time {i}: Queue length = {length}"
+                String[] parts = line.split("=");
+                if (parts.length == 2) {
+                    data.add(Integer.parseInt(parts[1].trim()));
+                }
+            }
+            System.out.println("Results read from file " + filename);
+        } catch (IOException | NumberFormatException e) {
+            System.err.println("Error reading file: " + e.getMessage());
+        }
+        return data;
     }
 }

@@ -1,6 +1,3 @@
-/**
- * Package containing simulation models and related components.
- */
 package simu.model;
 
 import db.connections.dao.QueueHistoryDao;

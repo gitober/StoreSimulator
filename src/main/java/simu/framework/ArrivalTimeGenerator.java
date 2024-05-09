@@ -1,30 +1,29 @@
 package simu.framework;
 
-import eduni.distributions.Distributions;
+import eduni.distributions.ContinuousGenerator;
 
 /**
- * The ArrivalTimeGenerator class is responsible for generating arrival times
- * based on an exponential distribution.
+ * Generates arrival times for simulation events.
  */
 public class ArrivalTimeGenerator {
-    private Distributions distributions;
+    private final ContinuousGenerator generator;
 
     /**
-     * Constructs an ArrivalTimeGenerator object.
+     * Constructs an ArrivalTimeGenerator with a given continuous generator.
      *
-     * @param distributions The distribution utility used to generate arrival times.
+     * @param generator The continuous generator to use for generating arrival times.
      */
-    public ArrivalTimeGenerator(Distributions distributions) {
-        this.distributions = distributions;
+    public ArrivalTimeGenerator(ContinuousGenerator generator) {
+        this.generator = generator;
     }
 
     /**
-     * Generates the next arrival time using an exponential distribution with the specified lambda.
+     * Generates the next arrival time based on the given index.
      *
-     * @param lambda The rate parameter (lambda) for the exponential distribution.
-     * @return The generated arrival time.
+     * @param index The index of the current event (not used here).
+     * @return The next arrival time.
      */
-    public double generateArrivalTime(double lambda) {
-        return distributions.negexp(1.0 / lambda);
+    public double generateArrivalTime(int index) {
+        return generator.sample();
     }
 }

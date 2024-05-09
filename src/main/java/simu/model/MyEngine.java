@@ -1,21 +1,21 @@
-/**
- * Package containing simulation models and related components.
- */
 package simu.model;
 
-import simu.framework.ArrivalTimeGenerator;
+import simu.framework.*;
+import simu.analysis.SimulationResults;
 import db.connections.datasource.MariaDbConnection;
-
 import controller.IControllerMtoV;
 import eduni.distributions.Negexp;
 import eduni.distributions.Normal;
-import eduni.distributions.Distributions;
-import simu.framework.*;
+import eduni.distributions.ContinuousGenerator;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +31,7 @@ public class MyEngine extends Engine {
 	private int maxCustomers;
 	private List<Customer> customers = new ArrayList<>();
 	private List<Event> events;
+	private List<Integer> queueLengths = new ArrayList<>(); // To collect queue lengths over time
 
 	/**
 	 * Constructs a new simulation engine.
@@ -48,7 +49,7 @@ public class MyEngine extends Engine {
 		servicePoints[1] = new ServicePoint(new Normal(8, 3), eventList, EventType.DELI_COUNTER, "Deli Counter");
 		servicePoints[2] = new ServicePoint(new Normal(3, 1), eventList, EventType.VEGETABLE_SECTION, "Vegetable Section");
 		servicePoints[3] = new ServicePoint(new Normal(4, 2), eventList, EventType.CASHIER, "Cashier");
-		arrivalProcess = new ArrivalProcess(new Negexp(10, 5), eventList, EventType.ARRIVAL, maxCustomers);
+		arrivalProcess = new ArrivalProcess(new Negexp(10), eventList, EventType.ARRIVAL, maxCustomers);
 
 		events = new ArrayList<>();
 	}
@@ -94,8 +95,10 @@ public class MyEngine extends Engine {
 	 */
 	@Override
 	public void initialization() {
+		ArrivalTimeGenerator generator = new ArrivalTimeGenerator(new Negexp(10)); // Pass a Negexp instance
+
 		for (int i = 1; i <= maxCustomers; i++) {
-			double arrivalTime = Clock.getInstance().getTime() + new ArrivalTimeGenerator(new Distributions()).generateArrivalTime(i);
+			double arrivalTime = Clock.getInstance().getTime() + generator.generateArrivalTime(i);
 			Event arrivalEvent = new Event(EventType.ARRIVAL, arrivalTime);
 			eventList.add(arrivalEvent);
 			events.add(arrivalEvent);
@@ -171,6 +174,13 @@ public class MyEngine extends Engine {
 				break;
 		}
 
+		// Update queue lengths (sum of all queues)
+		int totalQueueLength = 0;
+		for (ServicePoint sp : servicePoints) {
+			totalQueueLength += sp.getQueueLength();
+		}
+		queueLengths.add(totalQueueLength);
+
 		for (ServicePoint sp : servicePoints) {
 			if (sp.isOnQueue() && !sp.isReserved()) {
 				sp.beginService();
@@ -216,7 +226,29 @@ public class MyEngine extends Engine {
 		for (Customer customer : customers) {
 			Trace.out(Trace.Level.INFO, customer.getSummary());
 		}
+
+		// Save queue lengths to a file
+		saveQueueLengthsToFile();
+
+		// Generate a graph using SimulationResults
+		SimulationResults.saveResultsAndCreateGraph(queueLengths);
 	}
+
+	/**
+	 * Saves the collected queue lengths to a file for visualization.
+	 */
+	private void saveQueueLengthsToFile() {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter("queue_results.txt"))) {
+			DecimalFormat df = new DecimalFormat("#0.00");
+			for (int i = 0; i < queueLengths.size(); i++) {
+				writer.write("Time " + i + ": Queue length = " + queueLengths.get(i) + "\n");
+			}
+			System.out.println("Results saved to file queue_results.txt");
+		} catch (IOException e) {
+			System.err.println("Error saving results: " + e.getMessage());
+		}
+	}
+
 
 	/**
 	 * Sets the arrival pattern of customers in the simulation.
