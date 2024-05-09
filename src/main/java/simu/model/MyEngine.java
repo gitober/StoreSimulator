@@ -230,8 +230,14 @@ public class MyEngine extends Engine {
 		// Save queue lengths to a file
 		saveQueueLengthsToFile();
 
+		// Generate a list of times (assuming each observation corresponds to a time step)
+		List<Integer> times = new ArrayList<>();
+		for (int i = 0; i < queueLengths.size(); i++) {
+			times.add(i);
+		}
+
 		// Generate a graph using SimulationResults
-		SimulationResults.saveResultsAndCreateGraph(queueLengths);
+		SimulationResults.saveResultsAndCreateGraph(times, queueLengths);
 	}
 
 	/**
