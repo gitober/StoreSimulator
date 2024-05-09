@@ -9,8 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 import org.knowm.xchart.*;
 
+/**
+ * The SimulationResults class provides methods to read simulation results from a file,
+ * save the results to another file, create a graph based on the results, and save the graph as an image.
+ */
 public class SimulationResults {
 
+    /**
+     * The main method reads simulation results from a file and creates a graph based on the results.
+     *
+     * @param args Command-line arguments (not used).
+     */
     public static void main(String[] args) {
         // Example: Read simulation results from a file and create a graph
         List<Integer> times = new ArrayList<>();
@@ -18,6 +27,12 @@ public class SimulationResults {
         saveResultsAndCreateGraph(times, queueLengths);
     }
 
+    /**
+     * Saves the simulation results to a file and creates a graph based on the results.
+     *
+     * @param times        The list of times at which the queue lengths were recorded.
+     * @param queueLengths The list of queue lengths corresponding to the times.
+     */
     public static void saveResultsAndCreateGraph(List<Integer> times, List<Integer> queueLengths) {
         if (!times.isEmpty()) { // Check if times list is not empty
             saveResultsToFile(times, queueLengths);
@@ -28,6 +43,12 @@ public class SimulationResults {
         }
     }
 
+    /**
+     * Saves the simulation results to a file.
+     *
+     * @param times        The list of times at which the queue lengths were recorded.
+     * @param queueLengths The list of queue lengths corresponding to the times.
+     */
     private static void saveResultsToFile(List<Integer> times, List<Integer> queueLengths) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("results.txt"))) {
             for (int i = 0; i < times.size(); i++) {
@@ -48,6 +69,11 @@ public class SimulationResults {
         }
     }
 
+    /**
+     * Creates a graph based on the simulation results.
+     *
+     * @param data The list of queue lengths over time.
+     */
     private static void createGraph(List<Integer> data) {
         // Prepare data for XChart
         List<Integer> xData = new ArrayList<>();
@@ -74,6 +100,13 @@ public class SimulationResults {
         }
     }
 
+    /**
+     * Reads simulation results from a file.
+     *
+     * @param filename The name of the file containing simulation results.
+     * @param times    The list to store the times at which the queue lengths were recorded.
+     * @return The list of queue lengths corresponding to the recorded times.
+     */
     private static List<Integer> readResultsFromFile(String filename, List<Integer> times) {
         List<Integer> queueLengths = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
