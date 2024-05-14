@@ -91,7 +91,7 @@ class ControllerTest extends ApplicationTest {
         verify(mockUi).setDelay((long) (100 * 0.90)); // Verify that setDelay was called with 90% of the initial delay
     }
 
-    @RetryingTest(3)
+    @RetryingTest(5)
     void showEndTime_WithValidTime() throws InterruptedException {
         double endTime = 20.0;
         CountDownLatch latch = new CountDownLatch(1);

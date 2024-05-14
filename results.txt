@@ -9,263 +9,144 @@ Time 0,07: Queue length = 8
 Time 0,08: Queue length = 9
 Time 0,09: Queue length = 10
 Time 0,10: Queue length = 11
-Time 0,11: Queue length = 12
-Time 0,12: Queue length = 13
-Time 0,13: Queue length = 14
-Time 0,14: Queue length = 15
-Time 0,15: Queue length = 16
-Time 0,16: Queue length = 17
-Time 0,17: Queue length = 18
-Time 0,18: Queue length = 19
-Time 0,19: Queue length = 20
-Time 0,20: Queue length = 21
-Time 0,21: Queue length = 21
-Time 0,22: Queue length = 21
-Time 0,23: Queue length = 22
-Time 0,24: Queue length = 23
-Time 0,25: Queue length = 24
-Time 0,26: Queue length = 25
-Time 0,27: Queue length = 26
-Time 0,28: Queue length = 27
-Time 0,29: Queue length = 28
-Time 0,30: Queue length = 28
-Time 0,31: Queue length = 28
-Time 0,32: Queue length = 28
-Time 0,33: Queue length = 28
-Time 0,34: Queue length = 28
-Time 0,35: Queue length = 28
-Time 0,36: Queue length = 28
-Time 0,37: Queue length = 28
-Time 0,38: Queue length = 28
-Time 0,39: Queue length = 28
-Time 0,40: Queue length = 28
-Time 0,41: Queue length = 28
-Time 0,42: Queue length = 28
-Time 0,43: Queue length = 28
-Time 0,44: Queue length = 28
-Time 0,45: Queue length = 28
-Time 0,46: Queue length = 28
-Time 0,47: Queue length = 28
-Time 0,48: Queue length = 28
-Time 0,49: Queue length = 28
-Time 0,50: Queue length = 29
-Time 0,51: Queue length = 30
-Time 0,52: Queue length = 31
-Time 0,53: Queue length = 32
-Time 0,54: Queue length = 33
-Time 0,55: Queue length = 34
-Time 0,56: Queue length = 34
-Time 0,57: Queue length = 35
-Time 0,58: Queue length = 35
-Time 0,59: Queue length = 36
-Time 0,60: Queue length = 37
-Time 0,61: Queue length = 38
-Time 0,62: Queue length = 38
-Time 0,63: Queue length = 38
-Time 0,64: Queue length = 39
-Time 0,65: Queue length = 40
-Time 0,66: Queue length = 40
-Time 0,67: Queue length = 40
-Time 0,68: Queue length = 40
-Time 0,69: Queue length = 40
-Time 0,70: Queue length = 41
-Time 0,71: Queue length = 42
-Time 0,72: Queue length = 42
-Time 0,73: Queue length = 43
-Time 0,74: Queue length = 44
-Time 0,75: Queue length = 44
-Time 0,76: Queue length = 44
-Time 0,77: Queue length = 44
-Time 0,78: Queue length = 44
-Time 0,79: Queue length = 44
-Time 0,80: Queue length = 44
-Time 0,81: Queue length = 44
-Time 0,82: Queue length = 44
-Time 0,83: Queue length = 44
-Time 0,84: Queue length = 44
-Time 0,85: Queue length = 44
-Time 0,86: Queue length = 44
-Time 0,87: Queue length = 44
-Time 0,88: Queue length = 44
-Time 0,89: Queue length = 44
-Time 0,90: Queue length = 44
-Time 0,91: Queue length = 43
-Time 0,92: Queue length = 44
-Time 0,93: Queue length = 44
-Time 0,94: Queue length = 44
-Time 0,95: Queue length = 44
-Time 0,96: Queue length = 44
-Time 0,97: Queue length = 44
-Time 0,98: Queue length = 44
-Time 0,99: Queue length = 43
-Time 1,00: Queue length = 43
-Time 1,01: Queue length = 43
-Time 1,02: Queue length = 42
-Time 1,03: Queue length = 42
-Time 1,04: Queue length = 42
-Time 1,05: Queue length = 42
-Time 1,06: Queue length = 41
-Time 1,07: Queue length = 41
-Time 1,08: Queue length = 41
-Time 1,09: Queue length = 41
-Time 1,10: Queue length = 41
-Time 1,11: Queue length = 41
-Time 1,12: Queue length = 41
-Time 1,13: Queue length = 41
-Time 1,14: Queue length = 41
-Time 1,15: Queue length = 41
-Time 1,16: Queue length = 41
-Time 1,17: Queue length = 41
-Time 1,18: Queue length = 41
-Time 1,19: Queue length = 40
-Time 1,20: Queue length = 40
-Time 1,21: Queue length = 40
-Time 1,22: Queue length = 40
-Time 1,23: Queue length = 39
-Time 1,24: Queue length = 39
-Time 1,25: Queue length = 39
-Time 1,26: Queue length = 39
-Time 1,27: Queue length = 38
-Time 1,28: Queue length = 38
-Time 1,29: Queue length = 38
-Time 1,30: Queue length = 37
-Time 1,31: Queue length = 37
-Time 1,32: Queue length = 37
-Time 1,33: Queue length = 37
-Time 1,34: Queue length = 36
-Time 1,35: Queue length = 36
-Time 1,36: Queue length = 36
-Time 1,37: Queue length = 36
-Time 1,38: Queue length = 35
-Time 1,39: Queue length = 35
-Time 1,40: Queue length = 35
-Time 1,41: Queue length = 35
-Time 1,42: Queue length = 34
-Time 1,43: Queue length = 34
-Time 1,44: Queue length = 34
-Time 1,45: Queue length = 33
-Time 1,46: Queue length = 33
-Time 1,47: Queue length = 33
-Time 1,48: Queue length = 32
-Time 1,49: Queue length = 32
-Time 1,50: Queue length = 32
-Time 1,51: Queue length = 31
-Time 1,52: Queue length = 31
-Time 1,53: Queue length = 31
-Time 1,54: Queue length = 30
-Time 1,55: Queue length = 30
-Time 1,56: Queue length = 30
-Time 1,57: Queue length = 30
-Time 1,58: Queue length = 30
-Time 1,59: Queue length = 30
-Time 1,60: Queue length = 30
-Time 1,61: Queue length = 29
-Time 1,62: Queue length = 29
-Time 1,63: Queue length = 29
-Time 1,64: Queue length = 28
-Time 1,65: Queue length = 27
-Time 1,66: Queue length = 27
-Time 1,67: Queue length = 27
-Time 1,68: Queue length = 26
-Time 1,69: Queue length = 26
-Time 1,70: Queue length = 25
-Time 1,71: Queue length = 25
-Time 1,72: Queue length = 24
-Time 1,73: Queue length = 24
-Time 1,74: Queue length = 23
-Time 1,75: Queue length = 23
-Time 1,76: Queue length = 22
-Time 1,77: Queue length = 22
-Time 1,78: Queue length = 22
-Time 1,79: Queue length = 22
-Time 1,80: Queue length = 22
-Time 1,81: Queue length = 22
-Time 1,82: Queue length = 21
-Time 1,83: Queue length = 21
-Time 1,84: Queue length = 20
-Time 1,85: Queue length = 20
-Time 1,86: Queue length = 20
-Time 1,87: Queue length = 19
-Time 1,88: Queue length = 19
-Time 1,89: Queue length = 19
-Time 1,90: Queue length = 18
-Time 1,91: Queue length = 18
-Time 1,92: Queue length = 18
-Time 1,93: Queue length = 17
-Time 1,94: Queue length = 17
-Time 1,95: Queue length = 17
-Time 1,96: Queue length = 16
-Time 1,97: Queue length = 16
-Time 1,98: Queue length = 16
-Time 1,99: Queue length = 16
-Time 2,00: Queue length = 15
-Time 2,01: Queue length = 15
-Time 2,02: Queue length = 15
-Time 2,03: Queue length = 14
-Time 2,04: Queue length = 14
-Time 2,05: Queue length = 14
-Time 2,06: Queue length = 14
-Time 2,07: Queue length = 13
-Time 2,08: Queue length = 13
-Time 2,09: Queue length = 13
-Time 2,10: Queue length = 12
-Time 2,11: Queue length = 12
-Time 2,12: Queue length = 11
-Time 2,13: Queue length = 11
-Time 2,14: Queue length = 10
-Time 2,15: Queue length = 10
-Time 2,16: Queue length = 9
-Time 2,17: Queue length = 9
-Time 2,18: Queue length = 9
-Time 2,19: Queue length = 9
-Time 2,20: Queue length = 8
-Time 2,21: Queue length = 7
-Time 2,22: Queue length = 7
-Time 2,23: Queue length = 6
-Time 2,24: Queue length = 6
-Time 2,25: Queue length = 6
-Time 2,26: Queue length = 6
-Time 2,27: Queue length = 6
-Time 2,28: Queue length = 5
-Time 2,29: Queue length = 4
-Time 2,30: Queue length = 3
-Time 2,31: Queue length = 3
-Time 2,32: Queue length = 2
-Time 2,33: Queue length = 2
-Time 2,34: Queue length = 1
-Time 2,35: Queue length = 1
-Time 2,36: Queue length = 1
-Time 2,37: Queue length = 1
-Time 2,38: Queue length = 0
-Time 2,39: Queue length = 0
-Time 2,40: Queue length = 0
-Time 2,41: Queue length = 0
-Time 2,42: Queue length = 0
-Time 2,43: Queue length = 0
-Time 2,44: Queue length = 0
-Time 2,45: Queue length = 0
-Time 2,46: Queue length = 0
-Time 2,47: Queue length = 0
-Time 2,48: Queue length = 0
-Time 2,49: Queue length = 0
-Time 2,50: Queue length = 0
-Time 2,51: Queue length = 0
-Time 2,52: Queue length = 0
-Time 2,53: Queue length = 0
-Time 2,54: Queue length = 0
-Time 2,55: Queue length = 0
-Time 2,56: Queue length = 0
-Time 2,57: Queue length = 0
-Time 2,58: Queue length = 0
-Time 2,59: Queue length = 0
-Time 2,60: Queue length = 0
-Time 2,61: Queue length = 0
-Time 2,62: Queue length = 0
-Time 2,63: Queue length = 0
-Time 2,64: Queue length = 0
-Time 2,65: Queue length = 0
-Time 2,66: Queue length = 0
-Time 2,67: Queue length = 0
+Time 0,11: Queue length = 11
+Time 0,12: Queue length = 11
+Time 0,13: Queue length = 11
+Time 0,14: Queue length = 11
+Time 0,15: Queue length = 12
+Time 0,16: Queue length = 13
+Time 0,17: Queue length = 13
+Time 0,18: Queue length = 14
+Time 0,19: Queue length = 15
+Time 0,20: Queue length = 16
+Time 0,21: Queue length = 17
+Time 0,22: Queue length = 17
+Time 0,23: Queue length = 18
+Time 0,24: Queue length = 19
+Time 0,25: Queue length = 19
+Time 0,26: Queue length = 20
+Time 0,27: Queue length = 21
+Time 0,28: Queue length = 22
+Time 0,29: Queue length = 23
+Time 0,30: Queue length = 23
+Time 0,31: Queue length = 24
+Time 0,32: Queue length = 25
+Time 0,33: Queue length = 25
+Time 0,34: Queue length = 25
+Time 0,35: Queue length = 25
+Time 0,36: Queue length = 25
+Time 0,37: Queue length = 25
+Time 0,38: Queue length = 25
+Time 0,39: Queue length = 25
+Time 0,40: Queue length = 25
+Time 0,41: Queue length = 25
+Time 0,42: Queue length = 25
+Time 0,43: Queue length = 25
+Time 0,44: Queue length = 25
+Time 0,45: Queue length = 25
+Time 0,46: Queue length = 25
+Time 0,47: Queue length = 25
+Time 0,48: Queue length = 25
+Time 0,49: Queue length = 25
+Time 0,50: Queue length = 25
+Time 0,51: Queue length = 25
+Time 0,52: Queue length = 25
+Time 0,53: Queue length = 25
+Time 0,54: Queue length = 25
+Time 0,55: Queue length = 25
+Time 0,56: Queue length = 25
+Time 0,57: Queue length = 25
+Time 0,58: Queue length = 25
+Time 0,59: Queue length = 25
+Time 0,60: Queue length = 25
+Time 0,61: Queue length = 25
+Time 0,62: Queue length = 24
+Time 0,63: Queue length = 24
+Time 0,64: Queue length = 24
+Time 0,65: Queue length = 24
+Time 0,66: Queue length = 23
+Time 0,67: Queue length = 23
+Time 0,68: Queue length = 23
+Time 0,69: Queue length = 23
+Time 0,70: Queue length = 23
+Time 0,71: Queue length = 22
+Time 0,72: Queue length = 22
+Time 0,73: Queue length = 22
+Time 0,74: Queue length = 22
+Time 0,75: Queue length = 21
+Time 0,76: Queue length = 21
+Time 0,77: Queue length = 21
+Time 0,78: Queue length = 21
+Time 0,79: Queue length = 20
+Time 0,80: Queue length = 20
+Time 0,81: Queue length = 20
+Time 0,82: Queue length = 20
+Time 0,83: Queue length = 19
+Time 0,84: Queue length = 19
+Time 0,85: Queue length = 19
+Time 0,86: Queue length = 19
+Time 0,87: Queue length = 18
+Time 0,88: Queue length = 18
+Time 0,89: Queue length = 18
+Time 0,90: Queue length = 18
+Time 0,91: Queue length = 17
+Time 0,92: Queue length = 17
+Time 0,93: Queue length = 17
+Time 0,94: Queue length = 17
+Time 0,95: Queue length = 16
+Time 0,96: Queue length = 16
+Time 0,97: Queue length = 16
+Time 0,98: Queue length = 15
+Time 0,99: Queue length = 15
+Time 1,00: Queue length = 15
+Time 1,01: Queue length = 15
+Time 1,02: Queue length = 14
+Time 1,03: Queue length = 14
+Time 1,04: Queue length = 14
+Time 1,05: Queue length = 14
+Time 1,06: Queue length = 13
+Time 1,07: Queue length = 13
+Time 1,08: Queue length = 13
+Time 1,09: Queue length = 13
+Time 1,10: Queue length = 13
+Time 1,11: Queue length = 13
+Time 1,12: Queue length = 12
+Time 1,13: Queue length = 12
+Time 1,14: Queue length = 12
+Time 1,15: Queue length = 12
+Time 1,16: Queue length = 11
+Time 1,17: Queue length = 11
+Time 1,18: Queue length = 10
+Time 1,19: Queue length = 10
+Time 1,20: Queue length = 9
+Time 1,21: Queue length = 9
+Time 1,22: Queue length = 8
+Time 1,23: Queue length = 8
+Time 1,24: Queue length = 8
+Time 1,25: Queue length = 8
+Time 1,26: Queue length = 7
+Time 1,27: Queue length = 7
+Time 1,28: Queue length = 7
+Time 1,29: Queue length = 6
+Time 1,30: Queue length = 6
+Time 1,31: Queue length = 5
+Time 1,32: Queue length = 5
+Time 1,33: Queue length = 4
+Time 1,34: Queue length = 4
+Time 1,35: Queue length = 3
+Time 1,36: Queue length = 3
+Time 1,37: Queue length = 2
+Time 1,38: Queue length = 2
+Time 1,39: Queue length = 1
+Time 1,40: Queue length = 1
+Time 1,41: Queue length = 1
+Time 1,42: Queue length = 0
+Time 1,43: Queue length = 0
+Time 1,44: Queue length = 0
+Time 1,45: Queue length = 0
+Time 1,46: Queue length = 0
+Time 1,47: Queue length = 0
+Time 1,48: Queue length = 0
 
 
 Graph data:
@@ -280,260 +161,141 @@ Graph data:
 8,9
 9,10
 10,11
-11,12
-12,13
-13,14
-14,15
-15,16
-16,17
-17,18
-18,19
-19,20
-20,21
-21,21
-22,21
-23,22
-24,23
-25,24
-26,25
-27,26
-28,27
-29,28
-30,28
-31,28
-32,28
-33,28
-34,28
-35,28
-36,28
-37,28
-38,28
-39,28
-40,28
-41,28
-42,28
-43,28
-44,28
-45,28
-46,28
-47,28
-48,28
-49,28
-50,29
-51,30
-52,31
-53,32
-54,33
-55,34
-56,34
-57,35
-58,35
-59,36
-60,37
-61,38
-62,38
-63,38
-64,39
-65,40
-66,40
-67,40
-68,40
-69,40
-70,41
-71,42
-72,42
-73,43
-74,44
-75,44
-76,44
-77,44
-78,44
-79,44
-80,44
-81,44
-82,44
-83,44
-84,44
-85,44
-86,44
-87,44
-88,44
-89,44
-90,44
-91,43
-92,44
-93,44
-94,44
-95,44
-96,44
-97,44
-98,44
-99,43
-100,43
-101,43
-102,42
-103,42
-104,42
-105,42
-106,41
-107,41
-108,41
-109,41
-110,41
-111,41
-112,41
-113,41
-114,41
-115,41
-116,41
-117,41
-118,41
-119,40
-120,40
-121,40
-122,40
-123,39
-124,39
-125,39
-126,39
-127,38
-128,38
-129,38
-130,37
-131,37
-132,37
-133,37
-134,36
-135,36
-136,36
-137,36
-138,35
-139,35
-140,35
-141,35
-142,34
-143,34
-144,34
-145,33
-146,33
-147,33
-148,32
-149,32
-150,32
-151,31
-152,31
-153,31
-154,30
-155,30
-156,30
-157,30
-158,30
-159,30
-160,30
-161,29
-162,29
-163,29
-164,28
-165,27
-166,27
-167,27
-168,26
-169,26
-170,25
-171,25
-172,24
-173,24
-174,23
-175,23
-176,22
-177,22
-178,22
-179,22
-180,22
-181,22
-182,21
-183,21
-184,20
-185,20
-186,20
-187,19
-188,19
-189,19
-190,18
-191,18
-192,18
-193,17
-194,17
-195,17
-196,16
-197,16
-198,16
-199,16
-200,15
-201,15
-202,15
-203,14
-204,14
-205,14
-206,14
-207,13
-208,13
-209,13
-210,12
-211,12
-212,11
-213,11
-214,10
-215,10
-216,9
-217,9
-218,9
-219,9
-220,8
-221,7
-222,7
-223,6
-224,6
-225,6
-226,6
-227,6
-228,5
-229,4
-230,3
-231,3
-232,2
-233,2
-234,1
-235,1
-236,1
-237,1
-238,0
-239,0
-240,0
-241,0
-242,0
-243,0
-244,0
-245,0
-246,0
-247,0
-248,0
-249,0
-250,0
-251,0
-252,0
-253,0
-254,0
-255,0
-256,0
-257,0
-258,0
-259,0
-260,0
-261,0
-262,0
-263,0
-264,0
-265,0
-266,0
-267,0
+11,11
+12,11
+13,11
+14,11
+15,12
+16,13
+17,13
+18,14
+19,15
+20,16
+21,17
+22,17
+23,18
+24,19
+25,19
+26,20
+27,21
+28,22
+29,23
+30,23
+31,24
+32,25
+33,25
+34,25
+35,25
+36,25
+37,25
+38,25
+39,25
+40,25
+41,25
+42,25
+43,25
+44,25
+45,25
+46,25
+47,25
+48,25
+49,25
+50,25
+51,25
+52,25
+53,25
+54,25
+55,25
+56,25
+57,25
+58,25
+59,25
+60,25
+61,25
+62,24
+63,24
+64,24
+65,24
+66,23
+67,23
+68,23
+69,23
+70,23
+71,22
+72,22
+73,22
+74,22
+75,21
+76,21
+77,21
+78,21
+79,20
+80,20
+81,20
+82,20
+83,19
+84,19
+85,19
+86,19
+87,18
+88,18
+89,18
+90,18
+91,17
+92,17
+93,17
+94,17
+95,16
+96,16
+97,16
+98,15
+99,15
+100,15
+101,15
+102,14
+103,14
+104,14
+105,14
+106,13
+107,13
+108,13
+109,13
+110,13
+111,13
+112,12
+113,12
+114,12
+115,12
+116,11
+117,11
+118,10
+119,10
+120,9
+121,9
+122,8
+123,8
+124,8
+125,8
+126,7
+127,7
+128,7
+129,6
+130,6
+131,5
+132,5
+133,4
+134,4
+135,3
+136,3
+137,2
+138,2
+139,1
+140,1
+141,1
+142,0
+143,0
+144,0
+145,0
+146,0
+147,0
+148,0
